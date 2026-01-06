@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#000000"
+    android:padding="@dimen/register_padding">
+
+    <TextView
+        android:id="@+id/tvRoomsTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rooms"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/home_txt_size"
+        android:gravity="center"
+        android:paddingBottom="12dp" />
+
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No rooms yet"
+        android:textColor="@color/sky_blue"
+        android:alpha="0.7"
+        android:textSize="@dimen/home_txt_size"
+        android:gravity="center"
+        android:padding="16dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvRooms"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/btnCreateRoom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Room"
+        android:layout_marginTop="@dimen/rooms_margin_top"/>
+</LinearLayout>
