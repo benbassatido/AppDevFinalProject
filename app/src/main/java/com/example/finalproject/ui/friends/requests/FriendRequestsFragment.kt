@@ -8,7 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
-import com.example.finalproject.data.model.FriendRequest
+import com.example.finalproject.data.model.Friend
 import com.example.finalproject.data.repository.FriendRequestsRepository
 import kotlinx.coroutines.launch
 
@@ -45,7 +45,7 @@ class FriendRequestsFragment : Fragment(R.layout.fragment_friend_requests) {
         }
     }
 
-    private fun handleAccept(req: FriendRequest) {
+    private fun handleAccept(req: Friend) {
         viewLifecycleOwner.lifecycleScope.launch {
             repo.acceptRequest(req)
             loadRequests()
@@ -55,7 +55,7 @@ class FriendRequestsFragment : Fragment(R.layout.fragment_friend_requests) {
     }
 
 
-    private fun handleDecline(req: FriendRequest) {
+    private fun handleDecline(req: Friend) {
         viewLifecycleOwner.lifecycleScope.launch {
             repo.declineRequest(req)
             loadRequests()

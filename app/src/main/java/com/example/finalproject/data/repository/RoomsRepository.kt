@@ -145,8 +145,34 @@ class RoomsRepository {
         )
 
         db.reference.updateChildren(updates)
-            .addOnSuccessListener { onSuccess() }
+            .addOnSuccessListener {
+                membersRef.child(roomId).addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val isEmpty = !snapshot.hasChildren()
+
+                        if (isEmpty) {
+                            val deleteUpdates = hashMapOf<String, Any?>(
+                                "/rooms/$roomId" to null,
+                                "/room_members/$roomId" to null
+                            )
+
+                            db.reference.updateChildren(deleteUpdates)
+                                .addOnSuccessListener { onSuccess() }
+                                .addOnFailureListener { e ->
+                                    onError(e.message ?: "Failed to delete room")
+                                }
+                        } else {
+                            onSuccess()
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        onSuccess()
+                    }
+                })
+            }
             .addOnFailureListener { onError(it.message ?: "Leave failed") }
     }
+
 
 }

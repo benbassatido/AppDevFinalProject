@@ -7,16 +7,16 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
-import com.example.finalproject.data.model.FriendRequest
+import com.example.finalproject.data.model.Friend
 
 class FriendRequestsAdapter(
-    private val onAccept: (FriendRequest) -> Unit,
-    private val onDecline: (FriendRequest) -> Unit
+    private val onAccept: (Friend) -> Unit,
+    private val onDecline: (Friend) -> Unit
 ) : RecyclerView.Adapter<FriendRequestsAdapter.VH>() {
 
-    private val items = mutableListOf<FriendRequest>()
+    private val items = mutableListOf<Friend>()
 
-    fun submit(list: List<FriendRequest>) {
+    fun submit(list: List<Friend>) {
         items.clear()
         items.addAll(list)
         notifyDataSetChanged()
@@ -39,7 +39,7 @@ class FriendRequestsAdapter(
         private val btnAccept = itemView.findViewById<Button>(R.id.btnAccept)
         private val btnDecline = itemView.findViewById<Button>(R.id.btnDecline)
 
-        fun bind(req: FriendRequest) {
+        fun bind(req: Friend) {
             tvNickname.text = req.nickname
             tvUsername.text = req.username
 

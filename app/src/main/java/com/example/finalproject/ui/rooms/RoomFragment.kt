@@ -89,7 +89,10 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
         btnLeave.setOnClickListener {
             repo.leaveRoom(
                 roomId = roomId,
-                onSuccess = { Toast.makeText(requireContext(), "Left room", Toast.LENGTH_SHORT).show() },
+                onSuccess = {
+                    Toast.makeText(requireContext(), "Left room", Toast.LENGTH_SHORT).show()
+                            parentFragmentManager.popBackStack()
+                            },
                 onError = { msg -> Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show() }
             )
         }

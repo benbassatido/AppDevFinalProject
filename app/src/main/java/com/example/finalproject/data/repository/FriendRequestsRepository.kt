@@ -1,6 +1,6 @@
 package com.example.finalproject.data.repository
 
-import com.example.finalproject.data.model.FriendRequest
+import com.example.finalproject.data.model.Friend
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
@@ -12,21 +12,21 @@ class FriendRequestsRepository(
     private fun myUid(): String =
         auth.currentUser?.uid ?: throw IllegalStateException("Not logged in")
 
-    suspend fun getIncomingRequests(): List<FriendRequest> {
+    suspend fun getIncomingRequests(): List<Friend> {
         val me = myUid()
 
         val snap = db.reference.child("users").child(me)
             .child("friend_requests_in")
             .get().await()
 
-        val list = mutableListOf<FriendRequest>()
+        val list = mutableListOf<Friend>()
         for (child in snap.children) {
             val uid = child.child("uid").getValue(String::class.java) ?: child.key.orEmpty()
             val nickname = child.child("nickname").getValue(String::class.java) ?: ""
             val username = child.child("username").getValue(String::class.java) ?: ""
             val createdAt = child.child("createdAt").getValue(Long::class.java) ?: 0L
 
-            list.add(FriendRequest(uid = uid, nickname = nickname, username = username, createdAt = createdAt))
+            list.add(Friend(uid = uid, nickname = nickname, username = username, createdAt = createdAt))
         }
 
         return list.sortedByDescending { it.createdAt }
@@ -34,7 +34,7 @@ class FriendRequestsRepository(
 
 
 
-    suspend fun acceptRequest(req: FriendRequest) {
+    suspend fun acceptRequest(req: Friend) {
         val me = myUid()
         val other = req.uid
         if (other.isBlank() || other == me) return
@@ -75,7 +75,7 @@ class FriendRequestsRepository(
     }
 
 
-    suspend fun declineRequest(req: FriendRequest) {
+    suspend fun declineRequest(req: Friend) {
         val me = myUid()
         val other = req.uid
         if (other.isBlank() || other == me) return

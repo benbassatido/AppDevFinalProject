@@ -8,8 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import com.example.finalproject.MainActivity
 import com.example.finalproject.R
+import com.example.finalproject.ui.auth.CompleteProfileFragment
 import com.example.finalproject.ui.auth.RegisterFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -18,6 +21,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.FirebaseDatabase
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
@@ -42,7 +46,9 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
                 val credential = GoogleAuthProvider.getCredential(idToken, null)
                 auth.signInWithCredential(credential)
-                    .addOnSuccessListener { goToHome() }
+                    .addOnSuccessListener {
+                        routeAfterLogin()
+                    }
                     .addOnFailureListener { e ->
                         Toast.makeText(requireContext(), e.message ?: "Google login failed", Toast.LENGTH_LONG).show()
                     }
@@ -56,13 +62,13 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         super.onViewCreated(view, savedInstanceState)
 
         auth = FirebaseAuth.getInstance()
+
         val ivAppLogo = view.findViewById<ImageView>(R.id.ivAppLogo)
         val etEmail = view.findViewById<TextInputEditText>(R.id.etEmail)
         val etPassword = view.findViewById<TextInputEditText>(R.id.etPassword)
         val btnLogin = view.findViewById<MaterialButton>(R.id.btnLogin)
         val btnGoogle = view.findViewById<MaterialButton>(R.id.btnGoogle)
         val tvCreateAccount = view.findViewById<TextView>(R.id.tvCreateAccount)
-
 
         // Google Sign-In config
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -89,12 +95,12 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 return@setOnClickListener
             }
 
-            setLoading(ivAppLogo ,btnLogin, btnGoogle, etEmail, etPassword, true)
+            setLoading(ivAppLogo, btnLogin, btnGoogle, etEmail, etPassword, true)
 
             auth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
                     setLoading(ivAppLogo, btnLogin, btnGoogle, etEmail, etPassword, false)
-                    goToHome()
+                    routeAfterLogin()
                 }
                 .addOnFailureListener { e ->
                     setLoading(ivAppLogo, btnLogin, btnGoogle, etEmail, etPassword, false)
@@ -138,12 +144,39 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         btnLogin.text = if (loading) "LOGGING IN..." else "Sign In"
     }
 
+    private fun routeAfterLogin() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        if (uid.isNullOrBlank()) {
+            goToHome()
+            return
+        }
+
+        FirebaseDatabase.getInstance().reference
+            .child("users")
+            .child(uid)
+            .get()
+            .addOnSuccessListener { snap ->
+                val username = snap.child("username").getValue(String::class.java).orEmpty()
+                val nickname = snap.child("nickname").getValue(String::class.java).orEmpty()
+
+                if (username.isBlank() || nickname.isBlank()) {
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.authFragmentContainer, CompleteProfileFragment())
+                        .commit()
+                } else {
+                    goToHome()
+                }
+            }
+            .addOnFailureListener {
+                goToHome()
+            }
+    }
+
     private fun goToHome() {
-        val intent = Intent(requireContext(), com.example.finalproject.MainActivity::class.java)
+        val intent = Intent(requireContext(), MainActivity::class.java)
         startActivity(intent)
         requireActivity().finish()
     }
-
 
     private fun friendlyAuthError(msg: String?): String {
         val m = (msg ?: "").lowercase()

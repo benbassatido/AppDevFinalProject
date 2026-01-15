@@ -32,6 +32,10 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
     private var variant: String? = null
     private var partyType: String? = null
 
+    private var roomsQuery: Query? = null
+    private var membersRef: DatabaseReference? = null
+    private var currentRoomRef: DatabaseReference? = null
+
     private val latestRooms = mutableListOf<Room>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,21 +86,44 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
     }
 
     private fun startListenRooms() {
-        listener = repo.listenToRooms(
-            gameId = gameId,
-            variant = variant,
-            partyType = partyType,
-            onResult = { list ->
+        roomsQuery?.let { q ->
+            listener?.let { l -> q.removeEventListener(l) }
+        }
+
+        roomsQuery =
+            if (!gameId.isNullOrBlank())
+                FirebaseDatabase.getInstance().getReference("rooms").orderByChild("gameId").equalTo(gameId)
+            else
+                FirebaseDatabase.getInstance().getReference("rooms")
+
+        listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val list = mutableListOf<Room>()
+                for (child in snapshot.children) {
+                    val room = child.getValue(Room::class.java) ?: continue
+                    if (room.status != "open") continue
+                    if (!variant.isNullOrBlank() && room.variant != variant) continue
+                    if (!partyType.isNullOrBlank() && room.partyType != partyType) continue
+                    list.add(room)
+                }
+                list.sortByDescending { it.createdAt }
+
                 latestRooms.clear()
                 latestRooms.addAll(list)
                 adapter.submitList(latestRooms.toList())
-            },
-            onError = { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
-        )
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        roomsQuery!!.addValueEventListener(listener!!)
     }
 
+
     private fun listenToMembersCounts() {
-        val ref = FirebaseDatabase.getInstance().getReference("room_members")
+        membersRef = FirebaseDatabase.getInstance().getReference("room_members")
 
         membersListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -121,12 +148,13 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
             override fun onCancelled(error: DatabaseError) {}
         }
 
-        ref.addValueEventListener(membersListener!!)
+        membersRef!!.addValueEventListener(membersListener!!)
     }
+
 
     private fun listenToCurrentRoom() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val ref = FirebaseDatabase.getInstance().getReference("user_current_room").child(uid)
+        currentRoomRef = FirebaseDatabase.getInstance().getReference("user_current_room").child(uid)
 
         currentRoomListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -137,28 +165,24 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
             override fun onCancelled(error: DatabaseError) {}
         }
 
-        ref.addValueEventListener(currentRoomListener!!)
+        currentRoomRef!!.addValueEventListener(currentRoomListener!!)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
 
-        listener?.let {
-            FirebaseDatabase.getInstance().getReference("rooms").removeEventListener(it)
-        }
-        membersListener?.let {
-            FirebaseDatabase.getInstance().getReference("room_members").removeEventListener(it)
-        }
-        currentRoomListener?.let {
-            val uid = FirebaseAuth.getInstance().currentUser?.uid
-            if (uid != null) {
-                FirebaseDatabase.getInstance().getReference("user_current_room").child(uid)
-                    .removeEventListener(it)
-            }
-        }
+    override fun onDestroyView() {
+        roomsQuery?.let { q -> listener?.let { q.removeEventListener(it) } }
+        membersRef?.let { ref -> membersListener?.let { ref.removeEventListener(it) } }
+        currentRoomRef?.let { ref -> currentRoomListener?.let { ref.removeEventListener(it) } }
+
+        roomsQuery = null
+        membersRef = null
+        currentRoomRef = null
 
         listener = null
         membersListener = null
         currentRoomListener = null
+
+        super.onDestroyView()
     }
+
 }

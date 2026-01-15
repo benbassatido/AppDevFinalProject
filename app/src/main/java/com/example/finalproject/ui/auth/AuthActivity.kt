@@ -10,6 +10,7 @@ import com.example.finalproject.MainActivity
 import com.example.finalproject.R
 import com.example.finalproject.ui.login.LoginFragment
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class AuthActivity : AppCompatActivity() {
 
@@ -24,9 +25,33 @@ class AuthActivity : AppCompatActivity() {
             insets
         }
 
-        if (FirebaseAuth.getInstance().currentUser != null) {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
+        val user = FirebaseAuth.getInstance().currentUser
+
+        if (user != null) {
+            val uid = user.uid
+
+            FirebaseDatabase.getInstance().reference
+                .child("users")
+                .child(uid)
+                .get()
+                .addOnSuccessListener { snap ->
+                    val username = snap.child("username").getValue(String::class.java).orEmpty()
+                    val nickname = snap.child("nickname").getValue(String::class.java).orEmpty()
+
+                    if (username.isBlank() || nickname.isBlank()) {
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.authFragmentContainer, CompleteProfileFragment())
+                            .commit()
+                    } else {
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    }
+                }
+                .addOnFailureListener {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                }
+
             return
         }
 
