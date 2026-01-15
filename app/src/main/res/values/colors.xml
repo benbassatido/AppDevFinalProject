@@ -4,4 +4,14 @@
     <color name="white">#FFFFFFFF</color>
     <color name="sky_blue">#5BB8FF</color>
     <color name="background_grey_color">#DDDDDD</color>
+    <color name="neon_purple">#B56BFF</color>
+    <color name="neon_blue">#4A8CFF</color>
+    <color name="login_field_bg">#1A1E26</color>
+    <color name="login_hint">#A9A9B2</color>
+    <color name="login_icon_tint">#9C7BFF</color>
+    <color name="white_70">#B3FFFFFF</color>
+    <color name="purple_primary">#8B5CF6</color>
+    <color name="purple_primary_40">#668B5CF6</color>
+
+
 </resources>

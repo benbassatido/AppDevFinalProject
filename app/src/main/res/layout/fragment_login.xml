@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/loginRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:padding="20dp">
+
+    <!-- Top / Bottom guides -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.80"/>
+
+    <!-- CENTER X guide (IMPORTANT) -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gCenterX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <!-- LOGO (BIG, NO GLOW) -->
+    <ImageView
+        android:id="@+id/ivAppLogo"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:src="@drawable/squadapp_icon"
+        android:contentDescription="App Logo"
+        android:scaleType="fitCenter"
+        app:layout_constraintTop_toTopOf="@id/gTop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- TITLE -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="WELCOME,"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="28sp"
+        android:letterSpacing="0.12"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/ivAppLogo"
+        app:layout_constraintEnd_toStartOf="@id/gCenterX"/>
+
+    <TextView
+        android:id="@+id/tvTitleAccent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SQUAD"
+        android:textColor="@color/neon_purple"
+        android:textStyle="bold"
+        android:textSize="28sp"
+        android:letterSpacing="0.12"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="10dp"
+        app:layout_constraintTop_toBottomOf="@id/ivAppLogo"
+        app:layout_constraintStart_toStartOf="@id/gCenterX"/>
+
+    <!-- Barrier under title -->
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/titleBarrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="tvTitle,tvTitleAccent"/>
+
+    <!-- EMAIL -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilEmail"
+        style="@style/Widget.App.LoginTextInputLayout"
+        android:theme="@style/MyTextInputThemeOverlay"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:boxBackgroundMode="outline"
+        app:startIconDrawable="@drawable/ic_email"
+        app:startIconTint="@color/login_icon_tint"
+        app:layout_constraintTop_toBottomOf="@id/titleBarrier"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="EMAIL / USERNAME"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/white"
+            android:textColorHint="@color/login_hint"
+            android:background="@null"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- PASSWORD -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilPassword"
+        style="@style/Widget.App.LoginTextInputLayout"
+        android:theme="@style/MyTextInputThemeOverlay"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        app:boxBackgroundMode="outline"
+        app:startIconDrawable="@drawable/ic_lock"
+        app:startIconTint="@color/login_icon_tint"
+        app:endIconMode="password_toggle"
+        app:endIconTint="@color/login_icon_tint"
+        app:layout_constraintTop_toBottomOf="@id/tilEmail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="PASSWORD"
+            android:inputType="textPassword"
+            android:textColor="@color/white"
+            android:textColorHint="@color/login_hint"
+            android:background="@null"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- BUTTONS -->
+    <FrameLayout
+        android:id="@+id/wrapLogin"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:padding="12dp"
+        android:background="@drawable/bg_btn_outer_glow_primary"
+        app:layout_constraintTop_toBottomOf="@id/tilPassword"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:text="Sign In"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            app:cornerRadius="30dp"
+            app:backgroundTint="@null"
+            android:background="@drawable/bg_btn_body_primary"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/wrapGoogle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:padding="12dp"
+        android:background="@drawable/bg_btn_outer_glow_primary"
+        app:layout_constraintTop_toBottomOf="@id/wrapLogin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tvFooter">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGoogle"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:text="Continue With Google"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            app:cornerRadius="30dp"
+            app:backgroundTint="@null"
+            android:background="@drawable/bg_btn_body_primary"/>
+    </FrameLayout>
+
+    <!-- FOOTER -->
+    <TextView
+        android:id="@+id/tvFooter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New to the Squad?"
+        android:textColor="@color/white_70"
+        android:textSize="14sp"
+        android:layout_marginTop="18dp"
+        app:layout_constraintTop_toBottomOf="@id/wrapGoogle"
+        app:layout_constraintBottom_toBottomOf="@id/gBottom"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tvCreateAccount"
+        app:layout_constraintHorizontal_chainStyle="packed"/>
+
+    <TextView
+        android:id="@+id/tvCreateAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create an account"
+        android:textColor="@color/neon_purple"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:layout_marginStart="6dp"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvFooter"
+        app:layout_constraintStart_toEndOf="@id/tvFooter"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

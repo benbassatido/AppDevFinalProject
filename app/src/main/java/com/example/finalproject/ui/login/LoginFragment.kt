@@ -1,0 +1,158 @@
+package com.example.finalproject.ui.login
+
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
+import com.example.finalproject.R
+import com.example.finalproject.ui.auth.RegisterFragment
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+
+class LoginFragment : Fragment(R.layout.fragment_login) {
+
+    private lateinit var auth: FirebaseAuth
+    private lateinit var googleClient: GoogleSignInClient
+
+    private val googleLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
+            if (res.resultCode != Activity.RESULT_OK) return@registerForActivityResult
+
+            val data: Intent? = res.data
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+
+            try {
+                val account = task.result
+                val idToken = account.idToken
+
+                if (idToken.isNullOrEmpty()) {
+                    Toast.makeText(requireContext(), "Google sign-in failed (no token)", Toast.LENGTH_LONG).show()
+                    return@registerForActivityResult
+                }
+
+                val credential = GoogleAuthProvider.getCredential(idToken, null)
+                auth.signInWithCredential(credential)
+                    .addOnSuccessListener { goToHome() }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(requireContext(), e.message ?: "Google login failed", Toast.LENGTH_LONG).show()
+                    }
+
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), e.message ?: "Google sign-in failed", Toast.LENGTH_LONG).show()
+            }
+        }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        auth = FirebaseAuth.getInstance()
+        val ivAppLogo = view.findViewById<ImageView>(R.id.ivAppLogo)
+        val etEmail = view.findViewById<TextInputEditText>(R.id.etEmail)
+        val etPassword = view.findViewById<TextInputEditText>(R.id.etPassword)
+        val btnLogin = view.findViewById<MaterialButton>(R.id.btnLogin)
+        val btnGoogle = view.findViewById<MaterialButton>(R.id.btnGoogle)
+        val tvCreateAccount = view.findViewById<TextView>(R.id.tvCreateAccount)
+
+
+        // Google Sign-In config
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+
+        googleClient = GoogleSignIn.getClient(requireContext(), gso)
+
+        // Email/Password login
+        btnLogin.setOnClickListener {
+            val email = etEmail.text?.toString()?.trim().orEmpty()
+            val password = etPassword.text?.toString()?.trim().orEmpty()
+
+            etEmail.error = null
+            etPassword.error = null
+
+            if (email.isEmpty()) {
+                etEmail.error = "Email required"
+                return@setOnClickListener
+            }
+            if (password.isEmpty()) {
+                etPassword.error = "Password required"
+                return@setOnClickListener
+            }
+
+            setLoading(ivAppLogo ,btnLogin, btnGoogle, etEmail, etPassword, true)
+
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener {
+                    setLoading(ivAppLogo, btnLogin, btnGoogle, etEmail, etPassword, false)
+                    goToHome()
+                }
+                .addOnFailureListener { e ->
+                    setLoading(ivAppLogo, btnLogin, btnGoogle, etEmail, etPassword, false)
+                    Toast.makeText(
+                        requireContext(),
+                        friendlyAuthError(e.message),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+        }
+
+        // Google login
+        btnGoogle.setOnClickListener {
+            googleClient.signOut().addOnCompleteListener {
+                googleLauncher.launch(googleClient.signInIntent)
+            }
+        }
+
+        // Go to register
+        tvCreateAccount.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.authFragmentContainer, RegisterFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+    }
+
+    private fun setLoading(
+        ivAppLogo: ImageView,
+        btnLogin: MaterialButton,
+        btnGoogle: MaterialButton,
+        etEmail: TextInputEditText,
+        etPassword: TextInputEditText,
+        loading: Boolean
+    ) {
+        ivAppLogo.isEnabled = !loading
+        btnLogin.isEnabled = !loading
+        btnGoogle.isEnabled = !loading
+        etEmail.isEnabled = !loading
+        etPassword.isEnabled = !loading
+        btnLogin.text = if (loading) "LOGGING IN..." else "Sign In"
+    }
+
+    private fun goToHome() {
+        val intent = Intent(requireContext(), com.example.finalproject.MainActivity::class.java)
+        startActivity(intent)
+        requireActivity().finish()
+    }
+
+
+    private fun friendlyAuthError(msg: String?): String {
+        val m = (msg ?: "").lowercase()
+        return when {
+            "no user record" in m || "user does not exist" in m -> "User doesn't exist"
+            "password is invalid" in m || "wrong password" in m -> "Wrong password"
+            "badly formatted" in m -> "Email not valid"
+            "network error" in m -> "Network error try again later"
+            else -> msg ?: "Login failed"
+        }
+    }
+}

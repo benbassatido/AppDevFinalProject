@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/roomRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:padding="16dp">
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Back"
+        android:src="@android:drawable/ic_media_previous"
+        app:tint="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvRoomHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="ROOM"
+        android:textColor="#E6FFFFFF"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="@id/btnBack"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toEndOf="@id/btnBack"
+        app:layout_constraintEnd_toStartOf="@id/btnLeave"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnLeave"
+        android:layout_width="92dp"
+        android:layout_height="44dp"
+        android:text="LEAVE"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        app:cornerRadius="12dp"
+        app:backgroundTint="#D32F2F"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Card: room info -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardRoomInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="6dp"
+        app:strokeWidth="1.5dp"
+        app:strokeColor="#5A33FF"
+        app:cardBackgroundColor="#1A0F0F10"
+        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvRoomName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Chill Squad"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                tools:text="Champion's Squad" />
+
+            <TextView
+                android:id="@+id/tvRoomSub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="FORTNITE · BUILD · TRIO"
+                android:textColor="#B9C2CF"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:letterSpacing="0.06"
+                tools:text="APEX LEGENDS · BUILD · TRIO" />
+
+            <TextView
+                android:id="@+id/tvRoomDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Looking for chill players. No toxic."
+                android:textColor="#D6FFFFFF"
+                android:textSize="14sp"
+                tools:text="Road to Victory!" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvPlayersCount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Players: 0/3"
+                    android:textColor="#E6FFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    tools:text="Players: 3/3" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/ivMic"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@android:drawable/ic_btn_speak_now"
+                        app:tint="#B9C2CF"
+                        android:contentDescription="Mic" />
+
+                    <TextView
+                        android:id="@+id/tvMicRequired"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="Mic: Optional"
+                        android:textColor="#B9C2CF"
+                        android:textStyle="bold"
+                        android:textSize="12sp"
+                        tools:text="Mic: Required" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Title: Members -->
+    <TextView
+        android:id="@+id/tvMembersTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="MEMBERS"
+        android:textColor="#E6FFFFFF"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:letterSpacing="0.06"
+        app:layout_constraintTop_toBottomOf="@id/cardRoomInfo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Members list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMembers"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp"
+        app:layout_constraintTop_toBottomOf="@id/tvMembersTitle"
+        app:layout_constraintBottom_toTopOf="@id/wrapJoin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <TextView
+        android:id="@+id/tvEmptyMembers"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="No one here yet"
+        android:textColor="#B9C2CF"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="12dp"
+        app:layout_constraintTop_toTopOf="@id/rvMembers"
+        app:layout_constraintBottom_toBottomOf="@id/rvMembers"
+        app:layout_constraintStart_toStartOf="@id/rvMembers"
+        app:layout_constraintEnd_toEndOf="@id/rvMembers"/>
+
+
+    <FrameLayout
+        android:id="@+id/wrapJoin"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:background="@drawable/bg_btn_outer_glow_primary"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReady"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="JOIN ROOM"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:letterSpacing="0.08"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_btn_body_primary"
+            android:backgroundTint="@null"
+            app:backgroundTint="@null"
+            app:cornerRadius="30dp"
+            android:elevation="0dp"/>
+    </FrameLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

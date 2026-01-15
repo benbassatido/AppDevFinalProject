@@ -1,0 +1,130 @@
+package com.example.finalproject.ui.rooms.create
+
+import android.os.Bundle
+import android.view.View
+import android.widget.ImageButton
+import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import com.example.finalproject.R
+import com.example.finalproject.data.model.Room
+import com.example.finalproject.data.repository.RoomsRepository
+import com.example.finalproject.ui.rooms.RoomFragment
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+
+class CreateRoomFragment : Fragment(R.layout.fragment_create_room) {
+
+    private val repo = RoomsRepository()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val btnBack = view.findViewById<ImageButton>(R.id.btnBack)
+        val etTitle = view.findViewById<TextInputEditText>(R.id.etRoomTitle)
+        val etDesc = view.findViewById<TextInputEditText>(R.id.etDescription)
+        val swMic = view.findViewById<SwitchMaterial>(R.id.swMicRequired)
+        val btnCreate = view.findViewById<MaterialButton>(R.id.btnCreateRoom)
+
+        val gameId = arguments?.getString("gameId") ?: ""
+        val gameName = arguments?.getString("gameName") ?: ""
+        val variant = arguments?.getString("variant") ?: ""
+        val partyType = arguments?.getString("partyType") ?: ""
+
+        val maxPlayers = partyTypeToMaxPlayers(partyType)
+
+        btnBack.setOnClickListener { parentFragmentManager.popBackStack() }
+
+        val uid = FirebaseAuth.getInstance().currentUser?.uid.orEmpty()
+
+        btnCreate.setOnClickListener {
+            val title = etTitle.text?.toString()?.trim().orEmpty()
+            val description = etDesc.text?.toString()?.trim().orEmpty()
+            val micRequired = swMic.isChecked
+
+            if (uid.isBlank()) {
+                Toast.makeText(requireContext(), "Not logged in", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (title.isBlank()) {
+                Toast.makeText(requireContext(), "Please enter room name", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (maxPlayers == 0) {
+                Toast.makeText(requireContext(), "Invalid party type", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            btnCreate.isEnabled = false
+            btnCreate.text = "Creating..."
+
+            FirebaseDatabase.getInstance().reference
+                .child("users").child(uid).child("nickname")
+                .get()
+                .addOnSuccessListener { snap ->
+                    val nickname = snap.getValue(String::class.java) ?: "Owner"
+
+                    val room = Room(
+                        title = title,
+                        description = description,
+                        micRequired = micRequired,
+                        gameId = gameId,
+                        gameName = gameName,
+                        variant = variant,
+                        partyType = partyType,
+                        maxPlayers = maxPlayers,
+                        ownerName = nickname
+                    )
+
+                    repo.createRoom(
+                        room = room,
+                        onSuccess = { roomId ->
+                            repo.joinRoom(
+                                roomId = roomId,
+                                onSuccess = {
+                                    btnCreate.isEnabled = true
+                                    btnCreate.text = "CREATE ROOM"
+
+                                    val next = RoomFragment().apply {
+                                        arguments = bundleOf("roomId" to roomId)
+                                    }
+                                    parentFragmentManager.beginTransaction()
+                                        .replace(R.id.fragmentContainer, next)
+                                        .addToBackStack(null)
+                                        .commit()
+                                },
+                                onError = { msg ->
+                                    btnCreate.isEnabled = true
+                                    btnCreate.text = "CREATE ROOM"
+                                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        },
+                        onError = { msg ->
+                            btnCreate.isEnabled = true
+                            btnCreate.text = "CREATE ROOM"
+                            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+                .addOnFailureListener {
+                    btnCreate.isEnabled = true
+                    btnCreate.text = "CREATE ROOM"
+                    Toast.makeText(requireContext(), "Failed to read nickname", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+    private fun partyTypeToMaxPlayers(partyType: String): Int {
+        val t = partyType.lowercase()
+        return when {
+            t.contains("duo") -> 2
+            t.contains("trio") -> 3
+            t.contains("squad") || t.contains("squads") || t.contains("quad") || t.contains("quads") -> 4
+            else -> 0
+        }
+    }
+}
