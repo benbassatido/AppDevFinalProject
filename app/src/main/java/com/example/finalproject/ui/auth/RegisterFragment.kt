@@ -9,14 +9,15 @@ import androidx.fragment.app.Fragment
 import com.example.finalproject.MainActivity
 import com.example.finalproject.R
 import com.example.finalproject.data.model.AppUser
+import com.example.finalproject.data.repository.UsersRepository
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 
 class RegisterFragment : Fragment(R.layout.fragment_register) {
 
     private lateinit var auth: FirebaseAuth
+    private val usersRepo = UsersRepository()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -31,15 +32,12 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         val btnRegister = view.findViewById<MaterialButton>(R.id.btnRegister)
 
         btnRegister.setOnClickListener {
-
             val email = etEmail.text?.toString()?.trim().orEmpty()
             val username = etUsername.text?.toString()?.trim().orEmpty()
             val password = etPassword.text?.toString().orEmpty()
             val confirmPassword = etConfirmPassword.text?.toString().orEmpty()
             val nickname = etNickname.text?.toString()?.trim().orEmpty()
-            val nicknameLower = nickname.lowercase()
 
-            // Reset errors
             etEmail.error = null
             etUsername.error = null
             etPassword.error = null
@@ -47,34 +45,13 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             etNickname.error = null
 
             when {
-                email.isEmpty() -> {
-                    etEmail.error = "Email is required"
-                    return@setOnClickListener
-                }
-                !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                    etEmail.error = "Invalid email"
-                    return@setOnClickListener
-                }
-                username.isEmpty() -> {
-                    etUsername.error = "Username is required"
-                    return@setOnClickListener
-                }
-                password.length < 6 -> {
-                    etPassword.error = "Password must be at least 6 characters"
-                    return@setOnClickListener
-                }
-                confirmPassword.isEmpty() -> {
-                    etConfirmPassword.error = "Please confirm your password"
-                    return@setOnClickListener
-                }
-                password != confirmPassword -> {
-                    etConfirmPassword.error = "Passwords do not match"
-                    return@setOnClickListener
-                }
-                nickname.isEmpty() -> {
-                    etNickname.error = "Nickname is required"
-                    return@setOnClickListener
-                }
+                email.isEmpty() -> { etEmail.error = "Email is required"; return@setOnClickListener }
+                !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> { etEmail.error = "Invalid email"; return@setOnClickListener }
+                username.isEmpty() -> { etUsername.error = "Username is required"; return@setOnClickListener }
+                password.length < 6 -> { etPassword.error = "Password must be at least 6 characters"; return@setOnClickListener }
+                confirmPassword.isEmpty() -> { etConfirmPassword.error = "Please confirm your password"; return@setOnClickListener }
+                password != confirmPassword -> { etConfirmPassword.error = "Passwords do not match"; return@setOnClickListener }
+                nickname.isEmpty() -> { etNickname.error = "Nickname is required"; return@setOnClickListener }
             }
 
             setLoading(btnRegister, true)
@@ -95,38 +72,27 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                         email = email,
                         username = username,
                         nickname = nickname,
-                        nicknameLower = nicknameLower,
+                        nicknameLower = nickname.lowercase(),
                         createdAt = System.currentTimeMillis()
                     )
 
-                    FirebaseDatabase.getInstance()
-                        .reference
-                        .child("users")
-                        .child(uid)
-                        .setValue(userObj)
-                        .addOnSuccessListener {
+                    usersRepo.createNumberedUser(
+                        user = userObj,
+                        onSuccess = {
                             setLoading(btnRegister, false)
-
                             val intent = Intent(requireContext(), MainActivity::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(intent)
-                        }
-                        .addOnFailureListener { e ->
+                        },
+                        onError = { msg ->
                             setLoading(btnRegister, false)
-                            Toast.makeText(
-                                requireContext(),
-                                "DB FAIL: ${e.message}",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            Toast.makeText(requireContext(), "DB FAIL: $msg", Toast.LENGTH_LONG).show()
                         }
+                    )
                 }
                 .addOnFailureListener { e ->
                     setLoading(btnRegister, false)
-                    Toast.makeText(
-                        requireContext(),
-                        "Auth FAIL: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(requireContext(), "Auth FAIL: ${e.message}", Toast.LENGTH_LONG).show()
                 }
         }
     }

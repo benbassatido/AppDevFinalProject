@@ -7,89 +7,72 @@ import com.google.firebase.database.*
 class RoomsRepository {
 
     private val db = FirebaseDatabase.getInstance()
-    private val roomsRef = db.getReference("rooms")
-    private val membersRef = db.getReference("room_members")
+    private val rootRef = db.reference
+
+    private val roomsRef = rootRef.child("rooms")
+    private val membersRef = rootRef.child("room_members")
+    private val userCurrentRoomRef = rootRef.child("user_current_room")
 
     private val auth = FirebaseAuth.getInstance()
-    private fun uid(): String = auth.currentUser?.uid ?: ""
+    private fun uid(): String = auth.currentUser?.uid.orEmpty()
 
-    fun listenToRooms(
-        gameId: String? = null,
-        variant: String? = null,
-        partyType: String? = null,
-        onResult: (List<Room>) -> Unit,
-        onError: (String) -> Unit
-    ): ValueEventListener {
+    private val usersRepo = UsersRepository()
 
-
-        val query: Query =
-            if (!gameId.isNullOrBlank()) roomsRef.orderByChild("gameId").equalTo(gameId)
-            else roomsRef
-
-        val listener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val list = mutableListOf<Room>()
-                for (child in snapshot.children) {
-                    val room = child.getValue(Room::class.java) ?: continue
-                    if (room.status != "open") continue
-
-                    if (!variant.isNullOrBlank() && room.variant != variant) continue
-                    if (!partyType.isNullOrBlank() && room.partyType != partyType) continue
-
-                    list.add(room)
-                }
-                // הכי חדשים למעלה
-                list.sortByDescending { it.createdAt }
-                onResult(list)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                onError(error.message)
-            }
+    private fun makeRoomKey(gameId: String, variant: String, partyType: String, title: String): String {
+        fun clean(s: String): String {
+            return s.lowercase()
+                .trim()
+                .replace(Regex("\\s+"), "_")
+                .replace(Regex("[^a-z0-9_]"), "")
         }
-
-        query.addValueEventListener(listener)
-        return listener
-    }
-
-    fun stopListening(queryListenerOwnerRef: Query, listener: ValueEventListener) {
-        queryListenerOwnerRef.removeEventListener(listener)
+        return listOf(clean(gameId), clean(variant), clean(partyType), clean(title)).joinToString("_")
     }
 
     fun createRoom(
         room: Room,
-        onSuccess: (String) -> Unit,
+        onSuccess: (roomId: String) -> Unit,
         onError: (String) -> Unit
     ) {
-        val myUid = uid()
-        if (myUid.isBlank()) {
-            onError("User not logged in")
+        val ownerUid = uid()
+        if (ownerUid.isBlank()) {
+            onError("Not logged in")
             return
         }
 
-        val newId = roomsRef.push().key
-        if (newId == null) {
-            onError("Failed to create room id")
-            return
-        }
+        val key = makeRoomKey(room.gameId, room.variant, room.partyType, room.title)
+        val roomRef = roomsRef.child(key)
 
-        room.id = newId
-        room.ownerUid = myUid
-        room.createdAt = System.currentTimeMillis()
-        room.status = "open"
+        roomRef.get()
+            .addOnSuccessListener { snap ->
+                if (snap.exists()) {
+                    onError("Room already exists. Choose another name.")
+                    return@addOnSuccessListener
+                }
 
-        val updates = hashMapOf<String, Any?>(
-            "/rooms/$newId" to room,
+                val data: Map<String, Any?> = mapOf(
+                    "id" to key,
+                    "title" to room.title,
+                    "description" to room.description,
+                    "micRequired" to room.micRequired,
+                    "gameId" to room.gameId,
+                    "gameName" to room.gameName,
+                    "variant" to room.variant,
+                    "partyType" to room.partyType,
+                    "maxPlayers" to room.maxPlayers,
+                    "ownerUid" to ownerUid,
+                    "ownerName" to room.ownerName,
+                    "status" to "open",
+                    "createdAt" to ServerValue.TIMESTAMP,
+                    "currentPlayers" to 0
+                )
 
-            "/room_members/$newId/$myUid" to true,
-
-
-            "/user_current_room/$myUid" to newId
-        )
-
-        db.reference.updateChildren(updates)
-            .addOnSuccessListener { onSuccess(newId) }
-            .addOnFailureListener { onError(it.message ?: "Unknown error") }
+                roomRef.setValue(data)
+                    .addOnSuccessListener { onSuccess(key) }
+                    .addOnFailureListener { e -> onError(e.message ?: "Failed to create room") }
+            }
+            .addOnFailureListener { e ->
+                onError(e.message ?: "Failed to check room")
+            }
     }
 
 
@@ -98,81 +81,171 @@ class RoomsRepository {
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid
-            ?: return onError("Not logged in")
+        val userUid = uid()
+        if (userUid.isBlank()) {
+            onError("Not logged in")
+            return
+        }
 
-        val db = FirebaseDatabase.getInstance().reference
-        val userRoomRef = db.child("user_current_room").child(uid)
-        val roomMembersRef = db.child("room_members").child(roomId).child(uid)
+        usersRepo.ensureUserKey(
+            uid = userUid,
+            onSuccess = { userKey ->
 
-        userRoomRef.get()
-            .addOnSuccessListener { snap ->
-                val currentRoomId = snap.getValue(String::class.java)
+                val currentRef = userCurrentRoomRef.child(userKey)
 
-                if (!currentRoomId.isNullOrBlank() && currentRoomId != roomId) {
-                    onError("You are already in another room")
-                    return@addOnSuccessListener
-                }
+                currentRef.runTransaction(object : Transaction.Handler {
+                    override fun doTransaction(currentData: MutableData): Transaction.Result {
+                        val currentRoomId = currentData.getValue(String::class.java)
 
-                userRoomRef.setValue(roomId)
-                    .addOnSuccessListener {
-                        roomMembersRef.setValue(true)
-                            .addOnSuccessListener { onSuccess() }
-                            .addOnFailureListener { e -> onError(e.message ?: "Join failed") }
+                        // already in another room
+                        if (!currentRoomId.isNullOrBlank() && currentRoomId != roomId) {
+                            return Transaction.abort()
+                        }
+
+                        // not in any room OR already in this room
+                        currentData.value = roomId
+                        return Transaction.success(currentData)
                     }
-                    .addOnFailureListener { e -> onError(e.message ?: "Join failed") }
-            }
-            .addOnFailureListener { e ->
-                onError(e.message ?: "Failed to check current room")
-            }
-    }
 
+                    override fun onComplete(
+                        error: DatabaseError?,
+                        committed: Boolean,
+                        currentData: DataSnapshot?
+                    ) {
+                        if (error != null) {
+                            onError(error.message)
+                            return
+                        }
+
+                        if (!committed) {
+                            onError("You are already in another room. Leave it first.")
+                            return
+                        }
+
+                        val memberRef = membersRef.child(roomId).child(userKey)
+
+                        memberRef.get()
+                            .addOnSuccessListener { snap ->
+                                if (snap.exists()) {
+                                    onSuccess()
+                                    return@addOnSuccessListener
+                                }
+
+                                // store member info for easy UI
+                                rootRef.child("users").child(userKey).get()
+                                    .addOnSuccessListener { userSnap ->
+                                        val nickname = userSnap.child("nickname").getValue(String::class.java).orEmpty()
+                                        val username = userSnap.child("username").getValue(String::class.java).orEmpty()
+
+                                        val memberData = mapOf(
+                                            "nickname" to nickname,
+                                            "username" to username
+                                        )
+
+                                        memberRef.setValue(memberData)
+                                            .addOnSuccessListener {
+                                                incrementCurrentPlayers(roomId, +1, onSuccess, onError)
+                                            }
+                                            .addOnFailureListener { e ->
+                                                // rollback lock if membership failed
+                                                currentRef.setValue(null)
+                                                onError(e.message ?: "Failed to join room")
+                                            }
+                                    }
+                                    .addOnFailureListener { e ->
+                                        currentRef.setValue(null)
+                                        onError(e.message ?: "Failed to read user profile")
+                                    }
+                            }
+                            .addOnFailureListener { e ->
+                                currentRef.setValue(null)
+                                onError(e.message ?: "Failed to read membership")
+                            }
+                    }
+                })
+            },
+            onError = onError
+        )
+    }
 
     fun leaveRoom(
         roomId: String,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        val myUid = uid()
-        if (myUid.isBlank()) {
-            onError("User not logged in")
+        val userUid = uid()
+        if (userUid.isBlank()) {
+            onError("Not logged in")
             return
         }
 
-        val updates = hashMapOf<String, Any?>(
-            "/room_members/$roomId/$myUid" to null,
-            "/user_current_room/$myUid" to null
+        usersRepo.ensureUserKey(
+            uid = userUid,
+            onSuccess = { userKey ->
+
+                val updates = hashMapOf<String, Any?>(
+                    "/room_members/$roomId/$userKey" to null,
+                    "/user_current_room/$userKey" to null
+                )
+
+                rootRef.updateChildren(updates)
+                    .addOnSuccessListener {
+                        incrementCurrentPlayers(roomId, -1, onSuccess, onError)
+                    }
+                    .addOnFailureListener { e ->
+                        onError(e.message ?: "Failed to leave room")
+                    }
+            },
+            onError = onError
         )
-
-        db.reference.updateChildren(updates)
-            .addOnSuccessListener {
-                membersRef.child(roomId).addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        val isEmpty = !snapshot.hasChildren()
-
-                        if (isEmpty) {
-                            val deleteUpdates = hashMapOf<String, Any?>(
-                                "/rooms/$roomId" to null,
-                                "/room_members/$roomId" to null
-                            )
-
-                            db.reference.updateChildren(deleteUpdates)
-                                .addOnSuccessListener { onSuccess() }
-                                .addOnFailureListener { e ->
-                                    onError(e.message ?: "Failed to delete room")
-                                }
-                        } else {
-                            onSuccess()
-                        }
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        onSuccess()
-                    }
-                })
-            }
-            .addOnFailureListener { onError(it.message ?: "Leave failed") }
     }
 
+    private fun incrementCurrentPlayers(
+        roomId: String,
+        delta: Int,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val roomRef = roomsRef.child(roomId)
+        val playersRef = roomRef.child("currentPlayers")
+
+        playersRef.runTransaction(object : Transaction.Handler {
+            override fun doTransaction(currentData: MutableData): Transaction.Result {
+                val current = (currentData.value as? Long)?.toInt() ?: 0
+                var next = current + delta
+                if (next < 0) next = 0
+                currentData.value = next
+                return Transaction.success(currentData)
+            }
+
+            override fun onComplete(
+                error: DatabaseError?,
+                committed: Boolean,
+                currentData: DataSnapshot?
+            ) {
+                if (error != null) {
+                    onError(error.message)
+                    return
+                }
+
+                val next = (currentData?.getValue(Long::class.java) ?: 0L).toInt()
+
+                if (next == 0) {
+                    val updates = hashMapOf<String, Any?>(
+                        "/rooms/$roomId" to null,
+                        "/room_members/$roomId" to null
+                    )
+
+                    rootRef.updateChildren(updates)
+                        .addOnSuccessListener { onSuccess() }
+                        .addOnFailureListener { e ->
+                            onError(e.message ?: "Failed to delete empty room")
+                        }
+                } else {
+                    onSuccess()
+                }
+            }
+        })
+    }
 
 }

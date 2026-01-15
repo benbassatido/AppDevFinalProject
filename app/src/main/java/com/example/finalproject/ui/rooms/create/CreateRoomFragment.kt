@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.example.finalproject.R
 import com.example.finalproject.data.model.Room
 import com.example.finalproject.data.repository.RoomsRepository
+import com.example.finalproject.data.repository.UsersRepository
 import com.example.finalproject.ui.rooms.RoomFragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -19,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase
 class CreateRoomFragment : Fragment(R.layout.fragment_create_room) {
 
     private val repo = RoomsRepository()
+    private val usersRepo = UsersRepository()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,40 +63,52 @@ class CreateRoomFragment : Fragment(R.layout.fragment_create_room) {
             btnCreate.isEnabled = false
             btnCreate.text = "Creating..."
 
-            FirebaseDatabase.getInstance().reference
-                .child("users").child(uid).child("nickname")
-                .get()
-                .addOnSuccessListener { snap ->
-                    val nickname = snap.getValue(String::class.java) ?: "Owner"
+            usersRepo.ensureUserKey(
+                uid = uid,
+                onSuccess = { userKey ->
+                    FirebaseDatabase.getInstance().reference
+                        .child("users").child(userKey).child("nickname")
+                        .get()
+                        .addOnSuccessListener { snap ->
+                            val nickname = snap.getValue(String::class.java) ?: "Owner"
 
-                    val room = Room(
-                        title = title,
-                        description = description,
-                        micRequired = micRequired,
-                        gameId = gameId,
-                        gameName = gameName,
-                        variant = variant,
-                        partyType = partyType,
-                        maxPlayers = maxPlayers,
-                        ownerName = nickname
-                    )
+                            val room = Room(
+                                title = title,
+                                description = description,
+                                micRequired = micRequired,
+                                gameId = gameId,
+                                gameName = gameName,
+                                variant = variant,
+                                partyType = partyType,
+                                maxPlayers = maxPlayers,
+                                ownerName = nickname
+                            )
 
-                    repo.createRoom(
-                        room = room,
-                        onSuccess = { roomId ->
-                            repo.joinRoom(
-                                roomId = roomId,
-                                onSuccess = {
-                                    btnCreate.isEnabled = true
-                                    btnCreate.text = "CREATE ROOM"
+                            repo.createRoom(
+                                room = room,
+                                onSuccess = { roomId ->
+                                    repo.joinRoom(
+                                        roomId = roomId,
+                                        onSuccess = {
+                                            btnCreate.isEnabled = true
+                                            btnCreate.text = "CREATE ROOM"
 
-                                    val next = RoomFragment().apply {
-                                        arguments = bundleOf("roomId" to roomId)
-                                    }
-                                    parentFragmentManager.beginTransaction()
-                                        .replace(R.id.fragmentContainer, next)
-                                        .addToBackStack(null)
-                                        .commit()
+                                            parentFragmentManager.popBackStack()
+
+                                            val next = RoomFragment().apply {
+                                                arguments = bundleOf("roomId" to roomId)
+                                            }
+                                            parentFragmentManager.beginTransaction()
+                                                .replace(R.id.fragmentContainer, next)
+                                                .addToBackStack(null)
+                                                .commit()
+                                        },
+                                        onError = { msg ->
+                                            btnCreate.isEnabled = true
+                                            btnCreate.text = "CREATE ROOM"
+                                            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                                        }
+                                    )
                                 },
                                 onError = { msg ->
                                     btnCreate.isEnabled = true
@@ -102,19 +116,19 @@ class CreateRoomFragment : Fragment(R.layout.fragment_create_room) {
                                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                                 }
                             )
-                        },
-                        onError = { msg ->
+                        }
+                        .addOnFailureListener {
                             btnCreate.isEnabled = true
                             btnCreate.text = "CREATE ROOM"
-                            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Failed to read nickname", Toast.LENGTH_SHORT).show()
                         }
-                    )
-                }
-                .addOnFailureListener {
+                },
+                onError = { msg ->
                     btnCreate.isEnabled = true
                     btnCreate.text = "CREATE ROOM"
-                    Toast.makeText(requireContext(), "Failed to read nickname", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                 }
+            )
         }
     }
 

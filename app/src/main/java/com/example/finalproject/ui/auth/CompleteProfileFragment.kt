@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.example.finalproject.MainActivity
 import com.example.finalproject.R
 import com.example.finalproject.data.model.AppUser
+import com.example.finalproject.data.repository.UsersRepository
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
@@ -19,6 +20,7 @@ class CompleteProfileFragment : Fragment(R.layout.fragment_complete_profile) {
 
     private val auth by lazy { FirebaseAuth.getInstance() }
     private val db by lazy { FirebaseDatabase.getInstance().reference }
+    private val usersRepo = UsersRepository()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -52,14 +54,8 @@ class CompleteProfileFragment : Fragment(R.layout.fragment_complete_profile) {
             etUsername.error = null
             etNickname.error = null
 
-            if (username.length < 3) {
-                etUsername.error = "Username must be at least 3 characters"
-                return@setOnClickListener
-            }
-            if (nickname.length < 2) {
-                etNickname.error = "Nickname must be at least 2 characters"
-                return@setOnClickListener
-            }
+            if (username.length < 3) { etUsername.error = "Username must be at least 3 characters"; return@setOnClickListener }
+            if (nickname.length < 2) { etNickname.error = "Nickname must be at least 2 characters"; return@setOnClickListener }
 
             val validUsername = Regex("^[a-zA-Z0-9_]+$")
             if (!validUsername.matches(username)) {
@@ -70,54 +66,69 @@ class CompleteProfileFragment : Fragment(R.layout.fragment_complete_profile) {
             btnSave.isEnabled = false
             btnSave.text = "SAVING..."
 
-            db.child("users")
-                .orderByChild("username")
-                .equalTo(username)
-                .get()
-                .addOnSuccessListener { snap ->
-                    val takenByOther = snap.children.any { it.key != uid }
-                    if (takenByOther) {
-                        btnSave.isEnabled = true
-                        btnSave.text = "SAVE PROFILE"
-                        etUsername.error = "Username already taken"
-                        return@addOnSuccessListener
-                    }
+            usersRepo.ensureUserKey(
+                uid = uid,
+                onSuccess = { userKey ->
 
-                    val userObj = AppUser(
-                        uid = uid,
-                        email = email,
-                        username = username,
-                        nickname = nickname,
-                        nicknameLower = nickname.lowercase(),
-                        createdAt = 0L
-                    )
+                    db.child("users")
+                        .orderByChild("username")
+                        .equalTo(username)
+                        .get()
+                        .addOnSuccessListener { snap ->
+                            val takenByOther = snap.children.any { child ->
+                                val otherUid = child.child("uid").getValue(String::class.java).orEmpty()
+                                otherUid.isNotBlank() && otherUid != uid
+                            }
 
-                    val updates = hashMapOf<String, Any?>(
-                        "/users/$uid/uid" to userObj.uid,
-                        "/users/$uid/email" to userObj.email,
-                        "/users/$uid/username" to userObj.username,
-                        "/users/$uid/nickname" to userObj.nickname,
-                        "/users/$uid/nicknameLower" to userObj.nicknameLower,
-                        "/users/$uid/createdAt" to ServerValue.TIMESTAMP
-                    )
+                            if (takenByOther) {
+                                btnSave.isEnabled = true
+                                btnSave.text = "SAVE PROFILE"
+                                etUsername.error = "Username already taken"
+                                return@addOnSuccessListener
+                            }
 
-                    db.updateChildren(updates)
-                        .addOnSuccessListener {
-                            val intent = Intent(requireContext(), MainActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            startActivity(intent)
+                            val userObj = AppUser(
+                                uid = uid,
+                                email = email,
+                                username = username,
+                                nickname = nickname,
+                                nicknameLower = nickname.lowercase(),
+                                createdAt = 0L
+                            )
+
+                            val updates = hashMapOf<String, Any?>(
+                                "/users/$userKey/uid" to userObj.uid,
+                                "/users/$userKey/email" to userObj.email,
+                                "/users/$userKey/username" to userObj.username,
+                                "/users/$userKey/nickname" to userObj.nickname,
+                                "/users/$userKey/nicknameLower" to userObj.nicknameLower,
+                                "/users/$userKey/createdAt" to ServerValue.TIMESTAMP
+                            )
+
+                            db.updateChildren(updates)
+                                .addOnSuccessListener {
+                                    val intent = Intent(requireContext(), MainActivity::class.java)
+                                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    startActivity(intent)
+                                }
+                                .addOnFailureListener { e ->
+                                    btnSave.isEnabled = true
+                                    btnSave.text = "SAVE PROFILE"
+                                    Toast.makeText(requireContext(), e.message ?: "Save failed", Toast.LENGTH_LONG).show()
+                                }
                         }
                         .addOnFailureListener { e ->
                             btnSave.isEnabled = true
                             btnSave.text = "SAVE PROFILE"
-                            Toast.makeText(requireContext(), e.message ?: "Save failed", Toast.LENGTH_LONG).show()
+                            Toast.makeText(requireContext(), e.message ?: "Failed to validate username", Toast.LENGTH_LONG).show()
                         }
-                }
-                .addOnFailureListener { e ->
+                },
+                onError = { msg ->
                     btnSave.isEnabled = true
                     btnSave.text = "SAVE PROFILE"
-                    Toast.makeText(requireContext(), e.message ?: "Failed to validate username", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
                 }
+            )
         }
     }
 }

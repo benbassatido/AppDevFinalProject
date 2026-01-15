@@ -8,7 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.os.bundleOf
+import com.example.finalproject.data.repository.UsersRepository
 import androidx.fragment.app.Fragment
 import com.example.finalproject.MainActivity
 import com.example.finalproject.R
@@ -27,6 +27,8 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var googleClient: GoogleSignInClient
+
+    private val usersRepo = UsersRepository()
 
     private val googleLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
@@ -151,26 +153,35 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             return
         }
 
-        FirebaseDatabase.getInstance().reference
-            .child("users")
-            .child(uid)
-            .get()
-            .addOnSuccessListener { snap ->
-                val username = snap.child("username").getValue(String::class.java).orEmpty()
-                val nickname = snap.child("nickname").getValue(String::class.java).orEmpty()
+        usersRepo.ensureUserKey(
+            uid = uid,
+            onSuccess = { userKey ->
+                FirebaseDatabase.getInstance().reference
+                    .child("users")
+                    .child(userKey)
+                    .get()
+                    .addOnSuccessListener { snap ->
+                        val username = snap.child("username").getValue(String::class.java).orEmpty()
+                        val nickname = snap.child("nickname").getValue(String::class.java).orEmpty()
 
-                if (username.isBlank() || nickname.isBlank()) {
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.authFragmentContainer, CompleteProfileFragment())
-                        .commit()
-                } else {
-                    goToHome()
-                }
-            }
-            .addOnFailureListener {
+                        if (username.isBlank() || nickname.isBlank()) {
+                            parentFragmentManager.beginTransaction()
+                                .replace(R.id.authFragmentContainer, CompleteProfileFragment())
+                                .commit()
+                        } else {
+                            goToHome()
+                        }
+                    }
+                    .addOnFailureListener {
+                        goToHome()
+                    }
+            },
+            onError = {
                 goToHome()
             }
+        )
     }
+
 
     private fun goToHome() {
         val intent = Intent(requireContext(), MainActivity::class.java)

@@ -8,13 +8,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
 
 data class RoomMemberUi(
-    val uid: String,
+    val userKey: String,      // user_1, user_2...
     val nickname: String,
     val username: String
 )
 
 class RoomMembersAdapter(
-    private val myUid: String?
+    private val myUserKey: String?
 ) : RecyclerView.Adapter<RoomMembersAdapter.VH>() {
 
     private val items = mutableListOf<RoomMemberUi>()
@@ -31,7 +31,7 @@ class RoomMembersAdapter(
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        holder.bind(items[position], myUid)
+        holder.bind(items[position], myUserKey)
     }
 
     override fun getItemCount(): Int = items.size
@@ -42,14 +42,14 @@ class RoomMembersAdapter(
         private val tvUsername = itemView.findViewById<TextView>(R.id.tvUsername)
         private val tvMeBadge = itemView.findViewById<TextView>(R.id.tvMeBadge)
 
-        fun bind(item: RoomMemberUi, myUid: String?) {
+        fun bind(item: RoomMemberUi, myUserKey: String?) {
             tvNickname.text = item.nickname.ifBlank { "Player" }
             tvUsername.text = "@${item.username.ifBlank { "user" }}"
 
             val letter = (item.nickname.ifBlank { item.username }.trim().firstOrNull()?.uppercaseChar() ?: 'P')
             tvAvatar.text = letter.toString()
 
-            tvMeBadge.visibility = if (myUid != null && item.uid == myUid) View.VISIBLE else View.GONE
+            tvMeBadge.visibility = if (myUserKey != null && item.userKey == myUserKey) View.VISIBLE else View.GONE
         }
     }
 }

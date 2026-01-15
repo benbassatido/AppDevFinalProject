@@ -6,12 +6,12 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
 import com.example.finalproject.data.repository.RoomsRepository
+import com.example.finalproject.data.repository.UsersRepository
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -21,6 +21,7 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
     private val db: DatabaseReference by lazy { FirebaseDatabase.getInstance().reference }
     private val auth by lazy { FirebaseAuth.getInstance() }
     private val repo by lazy { RoomsRepository() }
+    private val usersRepo by lazy { UsersRepository() }
 
     private var roomId: String = ""
 
@@ -46,6 +47,9 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
     private var maxPlayers: Int = 0
     private var isInThisRoom: Boolean = false
 
+    private var myUserKey: String? = null
+    private var currentRoomRef: DatabaseReference? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -66,17 +70,37 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
         tvEmptyMembers = view.findViewById(R.id.tvEmptyMembers)
 
         val btnBack = view.findViewById<ImageButton>(R.id.btnBack)
-
         btnJoin = view.findViewById(R.id.btnReady)
         btnLeave = view.findViewById(R.id.btnLeave)
 
         btnBack.setOnClickListener { parentFragmentManager.popBackStack() }
 
-        adapter = RoomMembersAdapter(auth.currentUser?.uid)
-        rvMembers.layoutManager = LinearLayoutManager(requireContext())
-        rvMembers.adapter = adapter
-
         btnJoin.text = "JOIN ROOM"
+
+        val uid = auth.currentUser?.uid.orEmpty()
+        if (uid.isBlank()) {
+            setupMembersAdapter(null)
+            listenRoomDetails()
+            listenRoomMembers()
+            listenToMyCurrentRoom(null)
+        } else {
+            usersRepo.ensureUserKey(
+                uid = uid,
+                onSuccess = { userKey ->
+                    myUserKey = userKey
+                    setupMembersAdapter(userKey)
+                    listenRoomDetails()
+                    listenRoomMembers()
+                    listenToMyCurrentRoom(userKey)
+                },
+                onError = {
+                    setupMembersAdapter(null)
+                    listenRoomDetails()
+                    listenRoomMembers()
+                    listenToMyCurrentRoom(null)
+                }
+            )
+        }
 
         btnJoin.setOnClickListener {
             repo.joinRoom(
@@ -91,20 +115,28 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
                 roomId = roomId,
                 onSuccess = {
                     Toast.makeText(requireContext(), "Left room", Toast.LENGTH_SHORT).show()
-                            parentFragmentManager.popBackStack()
-                            },
+                    parentFragmentManager.popBackStack()
+                },
                 onError = { msg -> Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show() }
             )
         }
-
-        listenRoomDetails()
-        listenRoomMembers()
-        listenToMyCurrentRoom()
     }
 
-    private fun listenToMyCurrentRoom() {
-        val uid = auth.currentUser?.uid ?: return
-        val ref = db.child("user_current_room").child(uid)
+    private fun setupMembersAdapter(myKey: String?) {
+        adapter = RoomMembersAdapter(myKey)
+        rvMembers.layoutManager = LinearLayoutManager(requireContext())
+        rvMembers.adapter = adapter
+    }
+
+
+    private fun listenToMyCurrentRoom(userKey: String?) {
+        if (userKey.isNullOrBlank()) {
+            btnLeave.visibility = View.GONE
+            btnJoin.visibility = View.VISIBLE
+            return
+        }
+
+        currentRoomRef = db.child("user_current_room").child(userKey)
 
         currentRoomListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -123,7 +155,7 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
             override fun onCancelled(error: DatabaseError) {}
         }
 
-        ref.addValueEventListener(currentRoomListener!!)
+        currentRoomRef!!.addValueEventListener(currentRoomListener!!)
     }
 
     private fun listenRoomDetails() {
@@ -131,28 +163,24 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
 
         roomListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val name = snapshot.child("title").getValue(String::class.java)
-                    ?: snapshot.child("roomName").getValue(String::class.java)
-                    ?: "Room"
-
+                val name = snapshot.child("title").getValue(String::class.java) ?: "Room"
                 val desc = snapshot.child("description").getValue(String::class.java) ?: ""
 
-                // ✅ תואם למודל שלך (RoomsRepository/Room.kt)
                 val gName = snapshot.child("gameName").getValue(String::class.java) ?: ""
                 val variant = snapshot.child("variant").getValue(String::class.java) ?: ""
                 val partyType = snapshot.child("partyType").getValue(String::class.java) ?: ""
 
                 val micRequired = snapshot.child("micRequired").getValue(Boolean::class.java) ?: false
 
-                maxPlayers = snapshot.child("maxPlayers").getValue(Int::class.java)
-                    ?: run {
-                        when (partyType.lowercase()) {
-                            "duo", "duos" -> 2
-                            "trio", "trios" -> 3
-                            "squad", "squads", "quads", "quad" -> 4
-                            else -> 0
-                        }
+                maxPlayers = (snapshot.child("maxPlayers").getValue(Long::class.java) ?: 0L).toInt()
+                if (maxPlayers == 0) {
+                    maxPlayers = when (partyType.lowercase()) {
+                        "duo", "duos" -> 2
+                        "trio", "trios" -> 3
+                        "squad", "squads", "quads", "quad" -> 4
+                        else -> 0
                     }
+                }
 
                 tvRoomName.text = name
                 tvRoomDesc.text = if (desc.isBlank()) "No description" else desc
@@ -184,18 +212,18 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
         ref.addValueEventListener(roomListener!!)
     }
 
+
     private fun listenRoomMembers() {
         val ref = db.child("room_members").child(roomId)
 
         membersListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val uids = snapshot.children.mapNotNull { it.key }
-                val count = uids.size
+                val count = snapshot.childrenCount.toInt()
 
                 tvPlayersCount.text =
                     if (maxPlayers > 0) "Players: $count/$maxPlayers" else "Players: $count/?"
 
-                if (uids.isEmpty()) {
+                if (!snapshot.hasChildren()) {
                     adapter.submit(emptyList())
                     tvEmptyMembers.visibility = View.VISIBLE
                     return
@@ -203,7 +231,20 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
                     tvEmptyMembers.visibility = View.GONE
                 }
 
-                fetchMembersUsers(uids)
+                val list = mutableListOf<RoomMemberUi>()
+                for (child in snapshot.children) {
+                    val userKey = child.key ?: continue
+                    val nickname = child.child("nickname").getValue(String::class.java).orEmpty()
+                    val username = child.child("username").getValue(String::class.java).orEmpty()
+                    list.add(RoomMemberUi(userKey = userKey, nickname = nickname, username = username))
+                }
+
+                val sorted = list.sortedWith(
+                    compareByDescending<RoomMemberUi> { it.userKey == myUserKey }
+                        .thenBy { it.nickname.lowercase() }
+                )
+
+                adapter.submit(sorted)
             }
 
             override fun onCancelled(error: DatabaseError) {}
@@ -212,42 +253,19 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
         ref.addValueEventListener(membersListener!!)
     }
 
-    private fun fetchMembersUsers(uids: List<String>) {
-        val usersRef = db.child("users")
-        val result = mutableListOf<RoomMemberUi>()
-        var remaining = uids.size
-
-        uids.forEach { uid ->
-            usersRef.child(uid).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(s: DataSnapshot) {
-                    val nickname = s.child("nickname").getValue(String::class.java) ?: ""
-                    val username = s.child("username").getValue(String::class.java) ?: ""
-                    result.add(RoomMemberUi(uid, nickname, username))
-                    remaining--
-                    if (remaining == 0) {
-                        val myUid = auth.currentUser?.uid
-                        val sorted = result.sortedWith(
-                            compareByDescending<RoomMemberUi> { it.uid == myUid }.thenBy { it.nickname }
-                        )
-                        adapter.submit(sorted)
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    remaining--
-                    if (remaining == 0) adapter.submit(result)
-                }
-            })
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
+
         roomListener?.let { db.child("rooms").child(roomId).removeEventListener(it) }
         membersListener?.let { db.child("room_members").child(roomId).removeEventListener(it) }
-        currentRoomListener?.let {
-            val uid = auth.currentUser?.uid
-            if (uid != null) db.child("user_current_room").child(uid).removeEventListener(it)
+
+        currentRoomListener?.let { l ->
+            currentRoomRef?.removeEventListener(l)
         }
+
+        roomListener = null
+        membersListener = null
+        currentRoomListener = null
+        currentRoomRef = null
     }
 }
