@@ -28,6 +28,7 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
     private var gameName: String? = null
     private var variant: String? = null
     private var partyType: String? = null
+    private var maxPlayers: Int = 0
 
     private var roomsQuery: Query? = null
     private var membersRef: DatabaseReference? = null
@@ -42,6 +43,7 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
         gameName = arguments?.getString("gameName")
         variant = arguments?.getString("variant")
         partyType = arguments?.getString("partyType")
+        maxPlayers = arguments?.getInt("maxPlayers", 0) ?: 0
 
         val rv = view.findViewById<RecyclerView>(R.id.rvRooms)
         val fab = view.findViewById<MaterialButton>(R.id.btnCreateRoom)
@@ -68,7 +70,8 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
                     "gameId" to gameId,
                     "gameName" to gameName,
                     "variant" to variant,
-                    "partyType" to partyType
+                    "partyType" to partyType,
+                    "maxPlayers" to maxPlayers
                 )
             }
             parentFragmentManager.beginTransaction()
@@ -97,7 +100,6 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
 
                 for (child in snapshot.children) {
                     val room = child.getValue(Room::class.java) ?: continue
-
                     room.id = child.key.orEmpty()
 
                     if (room.status != "open") continue
@@ -131,11 +133,11 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
                 val updated = latestRooms.map { room ->
                     val count = snapshot.child(room.id).childrenCount.toInt()
 
-                    val max = if (room.maxPlayers > 0) room.maxPlayers else when (room.partyType.lowercase()) {
-                        "duo", "duos" -> 2
-                        "trio", "trios" -> 3
-                        "squad", "squads", "quads", "quad" -> 4
-                        else -> 0
+                    val max = when {
+                        room.maxPlayers > 0 -> room.maxPlayers
+                        maxPlayers > 0 -> maxPlayers
+                        room.gameId == "cs2" -> 5
+                        else -> partyTypeToMaxPlayers(room.partyType)
                     }
 
                     room.copy(currentPlayers = count, maxPlayers = max)
@@ -152,9 +154,18 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
         membersRef!!.addValueEventListener(membersListener!!)
     }
 
+    private fun partyTypeToMaxPlayers(partyType: String): Int {
+        val t = partyType.lowercase()
+        return when {
+            t.contains("duo") -> 2
+            t.contains("trio") -> 3
+            t.contains("quad") || t.contains("squad") || t.contains("quads") || t.contains("squads") -> 4
+            else -> 0
+        }
+    }
+
     private fun listenToCurrentRoom() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-
         val usersRepo = com.example.finalproject.data.repository.UsersRepository()
 
         usersRepo.ensureUserKey(
@@ -175,12 +186,9 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
 
                 currentRoomRef!!.addValueEventListener(currentRoomListener!!)
             },
-            onError = {
-                adapter.setCurrentRoomId(null)
-            }
+            onError = { adapter.setCurrentRoomId(null) }
         )
     }
-
 
     override fun onDestroyView() {
         roomsQuery?.let { q -> listener?.let { q.removeEventListener(it) } }

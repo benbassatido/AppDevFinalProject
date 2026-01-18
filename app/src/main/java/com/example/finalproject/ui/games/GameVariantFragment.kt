@@ -1,17 +1,21 @@
 package com.example.finalproject.ui.games
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
-import android.widget.Button
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
+import android.widget.TextView
+import androidx.constraintlayout.helper.widget.Flow
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.example.finalproject.R
 import com.example.finalproject.data.repository.GameOptionsRepository
+import com.example.finalproject.ui.rooms.RoomsFragment
+import com.google.android.material.button.MaterialButton
 
 class GameVariantFragment : Fragment(R.layout.fragment_game_variant) {
 
@@ -22,43 +26,54 @@ class GameVariantFragment : Fragment(R.layout.fragment_game_variant) {
         val gameName = requireArguments().getString("gameName").orEmpty()
         val logoRes = requireArguments().getInt("gameLogoRes", 0)
 
+        val directToRooms = requireArguments().getBoolean("directToRooms", false)
+        val fixedPartyType = requireArguments().getString("fixedPartyType").orEmpty()
+        val fixedMaxPlayers = requireArguments().getInt("fixedMaxPlayers", 0)
+
+        val btnBack = view.findViewById<ImageButton>(R.id.btnBack)
         val ivLogo = view.findViewById<ImageView>(R.id.ivGameLogo)
+        val tvSelectMode = view.findViewById<TextView>(R.id.tvSelectMode)
+
+        val optionsHost = view.findViewById<ConstraintLayout>(R.id.optionsHost)
+        val flow = view.findViewById<Flow>(R.id.flowOptions)
+
+        btnBack.setOnClickListener { parentFragmentManager.popBackStack() }
+
         if (logoRes != 0) ivLogo.setImageResource(logoRes) else ivLogo.setImageResource(R.drawable.logo_fortnite)
 
-        val container = view.findViewById<LinearLayout>(R.id.optionsContainer)
-        container.removeAllViews()
-        val btnBack = view.findViewById<ImageButton>(R.id.btnBack)
-
-        val variants = GameOptionsRepository.getVariants(gameId)
-
-        btnBack.setOnClickListener {
-            parentFragmentManager.popBackStack()
+        tvSelectMode.text = when (gameId) {
+            "arc_riders" -> "SELECT A MAP"
+            "valorant" -> "SELECT A RANK"
+            else -> "SELECT A MODE"
         }
 
-        variants.forEachIndexed { index, variant ->
+        optionsHost.removeAllViews()
+        optionsHost.addView(flow)
 
-            // OUTER GLOW (same as login)
-            val wrapper = FrameLayout(requireContext()).apply {
-                background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_btn_outer_glow_primary)
-                setPadding(dpToPx(10), dpToPx(10), dpToPx(10), dpToPx(10))
-            }
+        val variants = GameOptionsRepository.getVariants(gameId)
+        val ids = ArrayList<Int>(variants.size)
 
-            // BUTTON BODY (same as login)
-            val btn = Button(requireContext()).apply {
-                text = variant.title
-                isAllCaps = true
-                textSize = 14f
-                setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        variants.forEach { variant ->
+            val pill = buildGlowPillButton(variant.title) {
+                if (directToRooms) {
+                    val partyType = if (fixedPartyType.isNotBlank()) fixedPartyType else "Competitive"
+                    val maxPlayers = if (fixedMaxPlayers > 0) fixedMaxPlayers else 5
 
-                // IMPORTANT: backgroundTint must be null when using a drawable background
-                background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_btn_body_primary)
+                    val next = RoomsFragment().apply {
+                        arguments = bundleOf(
+                            "gameId" to gameId,
+                            "gameName" to gameName,
+                            "variant" to variant.title,
+                            "partyType" to partyType,
+                            "maxPlayers" to maxPlayers
+                        )
+                    }
 
-                minWidth = dpToPx(150)
-                minHeight = dpToPx(56)
-
-                setPadding(dpToPx(24), dpToPx(16), dpToPx(24), dpToPx(16))
-
-                setOnClickListener {
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, next)
+                        .addToBackStack(null)
+                        .commit()
+                } else {
                     val next = GameDetailsFragment().apply {
                         arguments = bundleOf(
                             "gameId" to gameId,
@@ -76,17 +91,54 @@ class GameVariantFragment : Fragment(R.layout.fragment_game_variant) {
                 }
             }
 
-            wrapper.addView(btn)
+            pill.id = View.generateViewId()
+            ids.add(pill.id)
 
-            val params = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+            optionsHost.addView(
+                pill,
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
             )
-            if (index != 0) params.marginStart = dpToPx(24)
-
-            wrapper.layoutParams = params
-            container.addView(wrapper)
         }
+
+        flow.referencedIds = ids.toIntArray()
+    }
+
+    private fun buildGlowPillButton(text: String, onClick: () -> Unit): FrameLayout {
+        val wrap = FrameLayout(requireContext()).apply {
+            setBackgroundResource(R.drawable.bg_btn_outer_glow_primary)
+            setPadding(dpToPx(10), dpToPx(10), dpToPx(10), dpToPx(10))
+            foregroundGravity = Gravity.CENTER
+        }
+
+        val btn = MaterialButton(requireContext()).apply {
+            this.text = text
+            isAllCaps = true
+            textSize = 14f
+            setTextColor(0xFFFFFFFF.toInt())
+            setOnClickListener { onClick() }
+
+            backgroundTintList = null
+            setBackgroundResource(R.drawable.bg_btn_body_primary)
+
+            minWidth = dpToPx(150)
+            minHeight = dpToPx(56)
+            setPadding(dpToPx(24), dpToPx(16), dpToPx(24), dpToPx(16))
+
+            elevation = 0f
+        }
+
+        val lp = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            dpToPx(56)
+        )
+        lp.gravity = Gravity.CENTER
+        btn.layoutParams = lp
+
+        wrap.addView(btn)
+        return wrap
     }
 
     private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()

@@ -18,6 +18,7 @@ import com.example.finalproject.ui.auth.AuthActivity
 import com.example.finalproject.ui.friends.FriendsFragment
 import com.example.finalproject.ui.games.GameDetailsFragment
 import com.example.finalproject.ui.games.GameVariantFragment
+import com.example.finalproject.ui.rooms.RoomsFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.button.MaterialButton
@@ -41,7 +42,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val btnViewFriends = view.findViewById<MaterialButton>(R.id.btnViewFriends)
         val btnLogout = view.findViewById<MaterialButton>(R.id.btnLogout)
 
-        // Auth check
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
             startActivity(Intent(requireContext(), AuthActivity::class.java))
@@ -51,7 +51,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         val uid = currentUser.uid
 
-        // Hello nickname
         tvHello.text = "Hello Player"
         usersRepo.ensureUserKey(
             uid = uid,
@@ -80,7 +79,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         allGames = listOf(
             Game("fortnite", "Fortnite", R.drawable.logo_fortnite),
-            Game("cs2", "CS2", R.drawable.logo_cs2),
+            Game("cs2", "Counter Strike 2", R.drawable.logo_cs2),
             Game("arc_riders", "Arc Riders", R.drawable.logo_arc_riders),
             Game("battlefield_6", "Battlefield 6", R.drawable.logo_battlefield_6),
             Game("cod_bo7", "COD Black Ops 7", R.drawable.logo_cod_black_ops),
@@ -88,37 +87,56 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         )
 
         adapter = GamesAdapter(allGames) { game ->
-            if (game.id == "fortnite") {
-                val f = GameVariantFragment().apply {
-                    arguments = bundleOf(
-                        "gameId" to game.id,
-                        "gameName" to game.name,
-                        "gameLogoRes" to game.logoRes
-                    )
+            when (game.id) {
+                "valorant" -> {
+                    val f = GameVariantFragment().apply {
+                        arguments = bundleOf(
+                            "gameId" to game.id,
+                            "gameName" to game.name,
+                            "gameLogoRes" to game.logoRes,
+                            "directToRooms" to true,
+                            "fixedPartyType" to "Competitive",
+                            "fixedMaxPlayers" to 5
+                        )
+                    }
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, f)
+                        .addToBackStack(null)
+                        .commit()
                 }
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, f)
-                    .addToBackStack(null)
-                    .commit()
-            } else {
-                val f = GameDetailsFragment().apply {
-                    arguments = bundleOf(
-                        "gameId" to game.id,
-                        "gameName" to game.name,
-                        "gameLogoRes" to game.logoRes,
-                        "variantId" to "",
-                        "variantTitle" to ""
-                    )
+                "fortnite", "cs2", "arc_riders", "battlefield_6", "cod_bo7" -> {
+                    val f = GameVariantFragment().apply {
+                        arguments = bundleOf(
+                            "gameId" to game.id,
+                            "gameName" to game.name,
+                            "gameLogoRes" to game.logoRes
+                        )
+                    }
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, f)
+                        .addToBackStack(null)
+                        .commit()
                 }
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, f)
-                    .addToBackStack(null)
-                    .commit()
+                else -> {
+                    val f = GameDetailsFragment().apply {
+                        arguments = bundleOf(
+                            "gameId" to game.id,
+                            "gameName" to game.name,
+                            "gameLogoRes" to game.logoRes,
+                            "variantId" to "",
+                            "variantTitle" to ""
+                        )
+                    }
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, f)
+                        .addToBackStack(null)
+                        .commit()
+                }
             }
         }
+
         rv.adapter = adapter
 
-        // View Friends
         btnViewFriends.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, FriendsFragment())
@@ -126,7 +144,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 .commit()
         }
 
-        // Logout
         btnLogout.setOnClickListener {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
             GoogleSignIn.getClient(requireContext(), gso).signOut()
@@ -136,7 +153,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             requireActivity().finish()
         }
 
-        // Search
         etSearch.doAfterTextChanged { text ->
             val q = text?.toString()?.trim().orEmpty().lowercase()
             val filtered =

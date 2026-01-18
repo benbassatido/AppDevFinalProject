@@ -35,8 +35,7 @@ class CreateRoomFragment : Fragment(R.layout.fragment_create_room) {
         val gameName = arguments?.getString("gameName") ?: ""
         val variant = arguments?.getString("variant") ?: ""
         val partyType = arguments?.getString("partyType") ?: ""
-
-        val maxPlayers = partyTypeToMaxPlayers(partyType)
+        val maxPlayers = arguments?.getInt("maxPlayers", 0) ?: 0
 
         btnBack.setOnClickListener { parentFragmentManager.popBackStack() }
 
@@ -55,8 +54,8 @@ class CreateRoomFragment : Fragment(R.layout.fragment_create_room) {
                 Toast.makeText(requireContext(), "Please enter room name", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            if (maxPlayers == 0) {
-                Toast.makeText(requireContext(), "Invalid party type", Toast.LENGTH_SHORT).show()
+            if (maxPlayers <= 0) {
+                Toast.makeText(requireContext(), "Invalid max players", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -129,16 +128,6 @@ class CreateRoomFragment : Fragment(R.layout.fragment_create_room) {
                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                 }
             )
-        }
-    }
-
-    private fun partyTypeToMaxPlayers(partyType: String): Int {
-        val t = partyType.lowercase()
-        return when {
-            t.contains("duo") -> 2
-            t.contains("trio") -> 3
-            t.contains("squad") || t.contains("squads") || t.contains("quad") || t.contains("quads") -> 4
-            else -> 0
         }
     }
 }
