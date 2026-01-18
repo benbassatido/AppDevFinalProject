@@ -1,3 +1,5 @@
+
+
 package com.example.finalproject.ui.auth
 
 import android.content.Intent
@@ -103,3 +105,5 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         btn.text = if (loading) "CREATING..." else "Create Account"
     }
 }
+
+

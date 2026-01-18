@@ -8,57 +8,60 @@ import kotlinx.coroutines.tasks.await
 
 class FriendsRepository(
     private val db: FirebaseDatabase = FirebaseDatabase.getInstance(),
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
+    private val usersRepo: UsersRepository = UsersRepository()
 ) {
     private fun myUid(): String =
         auth.currentUser?.uid ?: throw IllegalStateException("Not logged in")
 
+    private suspend fun myUserKey(): String = usersRepo.ensureUserKeySuspend(myUid())
+
     suspend fun getFriends(): List<Friend> {
-        val uid = myUid()
+        val meKey = myUserKey()
 
         val snap = db.reference
-            .child("users").child(uid)
+            .child("users").child(meKey)
             .child("friends")
             .get().await()
 
         val list = mutableListOf<Friend>()
         for (child in snap.children) {
-            val friendUid = child.child("uid").getValue(String::class.java) ?: child.key.orEmpty()
+            val friendKey = child.key.orEmpty()
             val nickname = child.child("nickname").getValue(String::class.java) ?: ""
             val username = child.child("username").getValue(String::class.java) ?: ""
             val createdAt = child.child("createdAt").getValue(Long::class.java) ?: 0L
 
-            list.add(Friend(friendUid, nickname, username, createdAt))
+            list.add(Friend(userKey = friendKey, nickname = nickname, username = username, createdAt = createdAt))
         }
 
         return list.sortedBy { it.nickname.lowercase() }
     }
 
-    suspend fun removeFriendMutualAndCleanupRequests(friendUid: String) {
-        val me = myUid()
-        if (friendUid.isBlank() || friendUid == me) return
+    suspend fun removeFriendMutualAndCleanupRequests(friendUserKey: String) {
+        val meKey = myUserKey()
+        if (friendUserKey.isBlank() || friendUserKey == meKey) return
 
         val root = db.reference
 
-        val myFriendsRef = root.child("users").child(me).child("friends")
-        val hisFriendsRef = root.child("users").child(friendUid).child("friends")
+        val myFriendsRef = root.child("users").child(meKey).child("friends")
+        val hisFriendsRef = root.child("users").child(friendUserKey).child("friends")
 
-        removeFriendFromRef(myFriendsRef, friendUid)
-        removeFriendFromRef(hisFriendsRef, me)
+        removeFriendFromRef(myFriendsRef, friendUserKey)
+        removeFriendFromRef(hisFriendsRef, meKey)
 
         val updates = hashMapOf<String, Any?>()
-        updates["users/$me/friend_requests_in/$friendUid"] = null
-        updates["users/$me/friend_requests_out/$friendUid"] = null
-        updates["users/$friendUid/friend_requests_in/$me"] = null
-        updates["users/$friendUid/friend_requests_out/$me"] = null
+        updates["users/$meKey/friend_requests_in/$friendUserKey"] = null
+        updates["users/$meKey/friend_requests_out/$friendUserKey"] = null
+        updates["users/$friendUserKey/friend_requests_in/$meKey"] = null
+        updates["users/$friendUserKey/friend_requests_out/$meKey"] = null
 
         root.updateChildren(updates).await()
     }
 
-    private suspend fun removeFriendFromRef(friendsRef: DatabaseReference, targetUid: String) {
-        friendsRef.child(targetUid).removeValue().await()
+    private suspend fun removeFriendFromRef(friendsRef: DatabaseReference, targetKey: String) {
+        friendsRef.child(targetKey).removeValue().await()
 
-        val q = friendsRef.orderByChild("uid").equalTo(targetUid).get().await()
+        val q = friendsRef.orderByChild("userKey").equalTo(targetKey).get().await()
         for (child in q.children) {
             child.ref.removeValue().await()
         }

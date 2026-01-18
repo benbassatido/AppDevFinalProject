@@ -15,7 +15,7 @@ import java.util.Date
 import java.util.Locale
 
 class MessagesAdapter(
-    private val myUid: String,
+    private val myUserKey: String,
     private val otherNickname: String
 ) : RecyclerView.Adapter<MessagesAdapter.VH>() {
 
@@ -37,7 +37,7 @@ class MessagesAdapter(
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val prev = if (position > 0) items[position - 1] else null
-        holder.bind(items[position], prev, myUid, otherNickname, timeFmt)
+        holder.bind(items[position], prev, myUserKey, otherNickname, timeFmt)
     }
 
     class VH(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -49,11 +49,11 @@ class MessagesAdapter(
         fun bind(
             msg: ChatMessage,
             prev: ChatMessage?,
-            myUid: String,
+            myUserKey: String,
             otherNickname: String,
             timeFmt: SimpleDateFormat
         ) {
-            val isMine = msg.senderId == myUid
+            val isMine = msg.senderId == myUserKey
             val prevSameSender = prev?.senderId == msg.senderId
 
             if (!prevSameSender) {
@@ -62,7 +62,6 @@ class MessagesAdapter(
             } else {
                 tvSender.visibility = View.GONE
             }
-
 
             tvText.text = msg.text
             tvTime.text = timeFmt.format(Date(msg.createdAt))

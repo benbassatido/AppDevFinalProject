@@ -2,6 +2,9 @@ package com.example.finalproject.data.repository
 
 import com.example.finalproject.data.model.AppUser
 import com.google.firebase.database.*
+import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.resumeWithException
+
 
 class UsersRepository {
 
@@ -158,4 +161,24 @@ class UsersRepository {
             onError = onError
         )
     }
+
+
+    suspend fun ensureUserKeySuspend(uid: String): String {
+        return kotlinx.coroutines.suspendCancellableCoroutine { cont ->
+            ensureUserKey(
+                uid = uid,
+                onSuccess = { cont.resume(it, null) },
+                onError = { cont.resumeWithException(IllegalStateException(it)) }
+            )
+        }
+    }
+
+    suspend fun getUserKeyByUidSuspend(uid: String): String? {
+        return try {
+            uidToUserRef.child(uid).get().await().getValue(String::class.java)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
 }

@@ -110,7 +110,7 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
         friendsAdapter = FriendsAdapter(
             onFriendClick = { friend ->
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, ChatFragment.newInstance(friend.uid, friend.nickname))
+                    .replace(R.id.fragmentContainer, ChatFragment.newInstance(friend.userKey, friend.nickname))
                     .addToBackStack(null)
                     .commit()
             },
@@ -120,15 +120,15 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
                     .setNegativeButton("Cancel", null)
                     .setPositiveButton("Delete") { _, _ ->
                         // UI immediate
-                        friendsAdapter.removeByUid(friend.uid)
-                        friendsUids.remove(friend.uid)
+                        friendsAdapter.removeByUid(friend.userKey)
+                        friendsUids.remove(friend.userKey)
                         tvEmptyFriends.visibility =
                             if (friendsAdapter.currentList().isEmpty()) View.VISIBLE else View.GONE
 
                         // DB delete
                         viewLifecycleOwner.lifecycleScope.launch {
                             try {
-                                friendsRepo.removeFriendMutualAndCleanupRequests(friend.uid)
+                                friendsRepo.removeFriendMutualAndCleanupRequests(friend.userKey)
                             } catch (_: Exception) {
                                 loadFriends()
                             }
@@ -288,7 +288,7 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
                 friendsAdapter.submit(list)
 
                 friendsUids.clear()
-                friendsUids.addAll(list.map { it.uid })
+                friendsUids.addAll(list.map { it.userKey })
 
                 tvEmptyFriends.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
             } catch (_: Exception) {

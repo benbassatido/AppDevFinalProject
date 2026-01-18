@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
 import com.example.finalproject.data.model.ChatMessage
 import com.example.finalproject.data.repository.ChatRepository
+import com.example.finalproject.data.repository.UsersRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -19,8 +20,11 @@ import kotlinx.coroutines.launch
 
 class ChatFragment : Fragment(R.layout.fragment_chat) {
 
-    private val repo = ChatRepository()
+    private val usersRepo = UsersRepository()
+    private val repo = ChatRepository(usersRepo = usersRepo)
+
     private val myUid: String by lazy { FirebaseAuth.getInstance().currentUser!!.uid }
+    private var myUserKey: String = ""
 
     private lateinit var tvChatTitle: TextView
     private lateinit var rvMessages: RecyclerView
@@ -30,15 +34,14 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     private lateinit var adapter: MessagesAdapter
 
     private var chatId: String = ""
-    private var otherUid: String = ""
+    private var otherUserKey: String = ""
     private var otherNickname: String = ""
     private var listener: ValueEventListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        otherUid = requireArguments().getString("otherUid").orEmpty()
+        otherUserKey = requireArguments().getString("otherUserKey").orEmpty()
         otherNickname = requireArguments().getString("otherNickname").orEmpty()
-        chatId = repo.chatIdFor(myUid, otherUid)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,13 +54,21 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
         tvChatTitle.text = otherNickname.ifBlank { "Chat" }
 
-        adapter = MessagesAdapter(myUid, otherNickname)
+        val btnBack = view.findViewById<android.widget.ImageButton>(R.id.btnBack)
+        btnBack.setOnClickListener { parentFragmentManager.popBackStack() }
 
-        rvMessages.layoutManager = LinearLayoutManager(requireContext())
-        rvMessages.adapter = adapter
 
         viewLifecycleOwner.lifecycleScope.launch {
-            repo.ensureChat(chatId, myUid, otherUid)
+            myUserKey = usersRepo.ensureUserKeySuspend(myUid)
+            chatId = repo.chatIdFor(myUserKey, otherUserKey)
+
+            adapter = MessagesAdapter(myUserKey, otherNickname)
+            rvMessages.layoutManager = LinearLayoutManager(requireContext())
+            rvMessages.adapter = adapter
+
+            repo.ensureChat(chatId, myUserKey, otherUserKey)
+
+            startListening()
         }
 
         btnSend.setOnClickListener {
@@ -67,8 +78,6 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                 repo.sendMessage(chatId, text)
             }
         }
-
-        startListening()
     }
 
     private fun startListening() {
@@ -79,8 +88,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                 adapter.submit(list)
                 if (list.isNotEmpty()) rvMessages.scrollToPosition(list.size - 1)
             },
-            onError = { _: DatabaseError ->
-            }
+            onError = { _: DatabaseError -> }
         )
     }
 
@@ -91,10 +99,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     }
 
     companion object {
-        fun newInstance(otherUid: String, otherNickname: String): ChatFragment {
+        fun newInstance(otherUserKey: String, otherNickname: String): ChatFragment {
             val f = ChatFragment()
             f.arguments = Bundle().apply {
-                putString("otherUid", otherUid)
+                putString("otherUserKey", otherUserKey)
                 putString("otherNickname", otherNickname)
             }
             return f

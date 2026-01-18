@@ -23,8 +23,8 @@ class FriendsAdapter(
         notifyDataSetChanged()
     }
 
-    fun removeByUid(uid: String) {
-        val idx = items.indexOfFirst { it.uid == uid }
+    fun removeByUid(userKey: String) {
+        val idx = items.indexOfFirst { it.userKey == userKey }
         if (idx != -1) {
             items.removeAt(idx)
             notifyItemRemoved(idx)

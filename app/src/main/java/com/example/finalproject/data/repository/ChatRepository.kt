@@ -7,53 +7,53 @@ import kotlinx.coroutines.tasks.await
 
 class ChatRepository(
     private val db: FirebaseDatabase = FirebaseDatabase.getInstance(),
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
+    private val usersRepo: UsersRepository = UsersRepository()
 ) {
+
     private fun myUid(): String =
         auth.currentUser?.uid ?: throw IllegalStateException("Not logged in")
 
-    fun chatIdFor(a: String, b: String): String =
-        if (a < b) "${a}_$b" else "${b}_$a"
+    fun chatIdFor(aUserKey: String, bUserKey: String): String =
+        if (aUserKey < bUserKey) "${aUserKey}_$bUserKey" else "${bUserKey}_$aUserKey"
 
-    suspend fun ensureChat(chatId: String, uid1: String, uid2: String) {
+    suspend fun ensureChat(chatId: String, userKey1: String, userKey2: String) {
         val root = db.reference
         val chatRef = root.child("chats").child(chatId)
 
         val snap = chatRef.child("participants").get().await()
         if (!snap.exists()) {
-            // create participants
-            val participants = mapOf(uid1 to true, uid2 to true)
+            val participants = mapOf(userKey1 to true, userKey2 to true)
             chatRef.child("participants").setValue(participants).await()
         }
 
-        // index under each user
         val now = System.currentTimeMillis()
-        root.child("users").child(uid1).child("chats").child(chatId)
-            .setValue(mapOf("otherUid" to uid2, "updatedAt" to now)).await()
-        root.child("users").child(uid2).child("chats").child(chatId)
-            .setValue(mapOf("otherUid" to uid1, "updatedAt" to now)).await()
+
+        root.child("users").child(userKey1).child("chats").child(chatId)
+            .setValue(mapOf("otherUserKey" to userKey2, "updatedAt" to now)).await()
+
+        root.child("users").child(userKey2).child("chats").child(chatId)
+            .setValue(mapOf("otherUserKey" to userKey1, "updatedAt" to now)).await()
     }
 
     suspend fun sendMessage(chatId: String, text: String) {
         val msgText = text.trim()
         if (msgText.isEmpty()) return
 
+        val uid = myUid()
+        val myUserKey = usersRepo.ensureUserKeySuspend(uid)
+
         val root = db.reference
         val msgRef = root.child("chats").child(chatId).child("messages").push()
         val now = System.currentTimeMillis()
 
         val msg = ChatMessage(
-            senderId = myUid(),
+            senderId = myUserKey,
             text = msgText,
             createdAt = now
         )
         msgRef.setValue(msg).await()
-
-
     }
-
-
-     // Live updates of messages (last N)
 
     fun listenMessages(
         chatId: String,

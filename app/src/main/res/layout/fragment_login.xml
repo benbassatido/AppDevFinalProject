@@ -8,7 +8,7 @@
     android:background="@drawable/background"
     android:padding="20dp">
 
-    <!-- Top / Bottom guides -->
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gTop"
         android:layout_width="wrap_content"
@@ -23,7 +23,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.80"/>
 
-    <!-- CENTER X guide (IMPORTANT) -->
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gCenterX"
         android:layout_width="wrap_content"
@@ -31,7 +31,7 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5"/>
 
-    <!-- LOGO (BIG, NO GLOW) -->
+
     <ImageView
         android:id="@+id/ivAppLogo"
         android:layout_width="160dp"
@@ -43,7 +43,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- TITLE -->
+
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
@@ -71,7 +71,7 @@
         app:layout_constraintTop_toBottomOf="@id/ivAppLogo"
         app:layout_constraintStart_toStartOf="@id/gCenterX"/>
 
-    <!-- Barrier under title -->
+
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/titleBarrier"
         android:layout_width="wrap_content"
@@ -79,7 +79,7 @@
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="tvTitle,tvTitleAccent"/>
 
-    <!-- EMAIL -->
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilEmail"
         style="@style/Widget.App.LoginTextInputLayout"
@@ -98,14 +98,14 @@
             android:id="@+id/etEmail"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:hint="EMAIL / USERNAME"
+            android:hint="EMAIL"
             android:inputType="textEmailAddress"
             android:textColor="@color/white"
             android:textColorHint="@color/login_hint"
             android:background="@null"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- PASSWORD -->
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilPassword"
         style="@style/Widget.App.LoginTextInputLayout"
@@ -133,7 +133,7 @@
             android:background="@null"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- BUTTONS -->
+
     <FrameLayout
         android:id="@+id/wrapLogin"
         android:layout_width="0dp"
@@ -183,7 +183,7 @@
             android:background="@drawable/bg_btn_body_primary"/>
     </FrameLayout>
 
-    <!-- FOOTER -->
+
     <TextView
         android:id="@+id/tvFooter"
         android:layout_width="wrap_content"

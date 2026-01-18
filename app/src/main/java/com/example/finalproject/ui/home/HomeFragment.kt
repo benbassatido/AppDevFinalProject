@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
 import com.example.finalproject.data.model.Game
+import com.example.finalproject.data.repository.UsersRepository
 import com.example.finalproject.ui.auth.AuthActivity
 import com.example.finalproject.ui.friends.FriendsFragment
 import com.example.finalproject.ui.games.GameDetailsFragment
@@ -21,15 +22,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private lateinit var adapter: GamesAdapter
     private lateinit var allGames: List<Game>
+
+    private val usersRepo by lazy { UsersRepository() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,7 +44,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         // Auth check
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
-
             startActivity(Intent(requireContext(), AuthActivity::class.java))
             requireActivity().finish()
             return
@@ -54,23 +53,28 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         // Hello nickname
         tvHello.text = "Hello Player"
-        FirebaseDatabase.getInstance()
-            .reference
-            .child("users")
-            .child(uid)
-            .child("nickname")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val nickname = snapshot.getValue(String::class.java)
-                    tvHello.text = if (!nickname.isNullOrBlank()) "Hello $nickname" else "Hello Player"
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    tvHello.text = "Hello Player"
-                    Toast.makeText(requireContext(), "DB read failed: ${error.message}", Toast.LENGTH_LONG).show()
-                }
-            })
-
+        usersRepo.ensureUserKey(
+            uid = uid,
+            onSuccess = { userKey ->
+                FirebaseDatabase.getInstance().reference
+                    .child("users")
+                    .child(userKey)
+                    .child("nickname")
+                    .get()
+                    .addOnSuccessListener { snap ->
+                        val nickname = snap.getValue(String::class.java)
+                        tvHello.text = if (!nickname.isNullOrBlank()) "Hello $nickname" else "Hello Player"
+                    }
+                    .addOnFailureListener { e ->
+                        tvHello.text = "Hello Player"
+                        Toast.makeText(requireContext(), "DB read failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
+            },
+            onError = { msg ->
+                tvHello.text = "Hello Player"
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+            }
+        )
 
         rv.layoutManager = GridLayoutManager(requireContext(), 3)
 
