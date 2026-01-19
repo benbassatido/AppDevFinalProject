@@ -6,11 +6,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.finalproject.data.firebase.FirebaseProvider
 import com.example.finalproject.ui.auth.AuthActivity
 import com.example.finalproject.ui.home.HomeFragment
-import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
+
+    private val auth = FirebaseProvider.auth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +27,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        if (FirebaseAuth.getInstance().currentUser == null) {
+        if (auth.currentUser == null) {
             startActivity(Intent(this, AuthActivity::class.java))
             finish()
             return

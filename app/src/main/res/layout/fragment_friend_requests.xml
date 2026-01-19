@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
-    android:padding="12dp">
+    android:padding="@dimen/padding_small">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gTop"
@@ -14,13 +14,12 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.02"/>
 
-    <!-- PANEL (big purple frame like the image) -->
     <FrameLayout
         android:id="@+id/panelRequests"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/bg_requests_panel"
-        android:padding="16dp"
+        android:padding="@dimen/padding_normal"
         app:layout_constraintTop_toTopOf="@id/gTop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,11 +33,11 @@
                 android:id="@+id/tvPending"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PENDING REQUESTS"
+                android:text="@string/friend_requests_title"
                 android:textColor="#EDE9FE"
                 android:textStyle="bold"
-                android:textSize="14sp"
-                android:letterSpacing="0.06"
+                android:textSize="@dimen/text_size_small"
+                android:letterSpacing="@dimen/letter_spacing_small"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"/>
 
@@ -47,8 +46,8 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:clipToPadding="false"
-                android:paddingTop="14dp"
-                android:paddingBottom="14dp"
+                android:paddingTop="@dimen/spacing_normal"
+                android:paddingBottom="@dimen/spacing_normal"
                 app:layout_constraintTop_toBottomOf="@id/tvPending"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -58,11 +57,11 @@
                 android:id="@+id/tvEmpty"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="No requests"
+                android:text="@string/friend_requests_no_requests"
                 android:textColor="#C7C7C7"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_size_normal"
                 android:gravity="center"
-                android:padding="12dp"
+                android:padding="@dimen/padding_small"
                 android:visibility="gone"
                 app:layout_constraintTop_toTopOf="@id/rvRequests"
                 app:layout_constraintBottom_toBottomOf="@id/rvRequests"

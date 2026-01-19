@@ -6,18 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    android:padding="18dp">
+    android:padding="@dimen/padding_large">
 
     <TextView
         android:id="@+id/tvHeader"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="COMPLETE YOUR PROFILE"
+        android:text="@string/complete_profile_title"
         android:textColor="#E6FFFFFF"
         android:textStyle="bold"
-        android:textSize="20sp"
+        android:textSize="@dimen/text_size_large"
         android:gravity="center"
-        android:letterSpacing="0.06"
+        android:letterSpacing="@dimen/letter_spacing_small"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -26,10 +26,10 @@
         android:id="@+id/cardProfile"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="14dp"
-        app:cardCornerRadius="22dp"
+        android:layout_marginTop="@dimen/spacing_normal"
+        app:cardCornerRadius="@dimen/spacing_huge"
         app:cardElevation="0dp"
-        app:strokeWidth="2dp"
+        app:strokeWidth="@dimen/card_stroke_width_thin"
         app:strokeColor="#7A3AED"
         app:cardBackgroundColor="#1A0F0F10"
         app:layout_constraintTop_toBottomOf="@id/tvHeader"
@@ -41,15 +41,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="18dp">
+            android:padding="@dimen/padding_large">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Username"
+                android:text="@string/label_username"
                 android:textColor="#E6FFFFFF"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_size_normal"
                 android:layout_marginBottom="8dp"/>
 
             <LinearLayout
@@ -63,7 +63,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
-                    android:hint="Enter Username"
+                    android:hint="@string/hint_enter_username"
                     android:textColor="#FFFFFF"
                     android:textColorHint="#B9C2CF"
                     android:inputType="text"
@@ -72,15 +72,15 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="16dp"/>
+                android:layout_height="@dimen/spacing_large"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nickname"
+                android:text="@string/label_nickname"
                 android:textColor="#E6FFFFFF"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_size_normal"
                 android:layout_marginBottom="8dp"/>
 
             <!-- Nickname input box -->
@@ -88,14 +88,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_purple_outline"
-                android:padding="12dp">
+                android:padding="@dimen/padding_small">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etNickname"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
-                    android:hint="Enter Nickname"
+                    android:hint="@string/hint_enter_nickname"
                     android:textColor="#FFFFFF"
                     android:textColorHint="#B9C2CF"
                     android:inputType="textCapWords"
@@ -109,9 +109,9 @@
     <FrameLayout
         android:id="@+id/wrapSave"
         android:layout_width="0dp"
-        android:layout_height="64dp"
+        android:layout_height="@dimen/button_height_xxlarge"
         android:background="@drawable/bg_btn_outer_glow_primary"
-        android:padding="10dp"
+        android:padding="@dimen/spacing_small"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -120,15 +120,15 @@
             android:id="@+id/btnSaveProfile"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="SAVE PROFILE"
+            android:text="@string/btn_save_profile"
             android:textAllCaps="true"
             android:textStyle="bold"
-            android:letterSpacing="0.08"
+            android:letterSpacing="@dimen/letter_spacing_medium"
             android:textColor="@color/white"
             android:background="@drawable/bg_btn_body_primary"
             android:backgroundTint="@null"
             app:backgroundTint="@null"
-            app:cornerRadius="30dp"
+            app:cornerRadius="@dimen/button_corner_radius"
             android:elevation="0dp"/>
     </FrameLayout>
 

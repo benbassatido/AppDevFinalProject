@@ -1,21 +1,23 @@
 package com.example.finalproject.data.repository
 
-import com.example.finalproject.data.model.SearchUser
+import com.example.finalproject.data.firebase.FirebaseProvider
+import com.example.finalproject.data.model.SearchUserUi
+import com.example.finalproject.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
 
 class FriendsSearchRepository(
-    private val db: FirebaseDatabase = FirebaseDatabase.getInstance(),
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
-    private val usersRepo: UsersRepository = UsersRepository()
-) {
-    private fun myUid(): String =
-        auth.currentUser?.uid ?: throw IllegalStateException("Not logged in")
+    private val db: FirebaseDatabase = FirebaseProvider.database,
+    auth: FirebaseAuth = FirebaseProvider.auth,
+    usersRepo: UsersRepository = UsersRepository()
+) : BaseRepository(auth, usersRepo) {
 
-    private suspend fun myUserKey(): String = usersRepo.ensureUserKeySuspend(myUid())
+    companion object {
+        private const val SEARCH_RESULTS_LIMIT = 20
+    }
 
-    suspend fun searchByNicknamePrefix(prefix: String): List<SearchUser> {
+    suspend fun searchByNicknamePrefix(prefix: String): List<SearchUserUi> {
         val p = prefix.trim().lowercase()
         if (p.isEmpty()) return emptyList()
 
@@ -25,24 +27,27 @@ class FriendsSearchRepository(
             .orderByChild("nicknameLower")
             .startAt(p)
             .endAt(p + "\uf8ff")
-            .limitToFirst(20)
+            .limitToFirst(SEARCH_RESULTS_LIMIT)
 
         val snap = query.get().await()
 
-        val results = mutableListOf<SearchUser>()
+        val results = mutableListOf<SearchUserUi>()
         for (child in snap.children) {
             val userKey = child.key.orEmpty()
             if (userKey == meKey) continue
 
-            results.add(
-                SearchUser(
-                    uid = userKey, // <-- פה עכשיו זה userKey
-                    username = child.child("username").getValue(String::class.java) ?: "",
-                    nickname = child.child("nickname").getValue(String::class.java) ?: "",
-                    nicknameLower = child.child("nicknameLower").getValue(String::class.java) ?: ""
-                )
+            val user = User(
+                userKey = userKey,
+                uid = child.child("uid").getValue(String::class.java) ?: "",
+                username = child.child("username").getValue(String::class.java) ?: "",
+                nickname = child.child("nickname").getValue(String::class.java) ?: "",
+                nicknameLower = child.child("nicknameLower").getValue(String::class.java) ?: "",
+                email = child.child("email").getValue(String::class.java) ?: "",
+                createdAt = child.child("createdAt").getValue(Long::class.java) ?: 0L
             )
+            results.add(SearchUserUi(user = user))
         }
+        
         return results
     }
 

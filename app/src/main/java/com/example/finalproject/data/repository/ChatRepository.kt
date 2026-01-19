@@ -1,18 +1,16 @@
 package com.example.finalproject.data.repository
 
+import com.example.finalproject.data.firebase.FirebaseProvider
 import com.example.finalproject.data.model.ChatMessage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.coroutines.tasks.await
 
 class ChatRepository(
-    private val db: FirebaseDatabase = FirebaseDatabase.getInstance(),
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
-    private val usersRepo: UsersRepository = UsersRepository()
-) {
-
-    private fun myUid(): String =
-        auth.currentUser?.uid ?: throw IllegalStateException("Not logged in")
+    private val db: FirebaseDatabase = FirebaseProvider.database,
+    auth: FirebaseAuth = FirebaseProvider.auth,
+    usersRepo: UsersRepository = UsersRepository()
+) : BaseRepository(auth, usersRepo) {
 
     fun chatIdFor(aUserKey: String, bUserKey: String): String =
         if (aUserKey < bUserKey) "${aUserKey}_$bUserKey" else "${bUserKey}_$aUserKey"

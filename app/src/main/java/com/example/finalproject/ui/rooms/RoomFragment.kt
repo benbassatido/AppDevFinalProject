@@ -6,22 +6,27 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
+import com.example.finalproject.data.firebase.FirebaseProvider
+import com.example.finalproject.data.model.RoomMember
 import com.example.finalproject.data.repository.RoomsRepository
 import com.example.finalproject.data.repository.UsersRepository
 import com.google.android.material.button.MaterialButton
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 
 class RoomFragment : Fragment(R.layout.fragment_room) {
 
-    private val db: DatabaseReference by lazy { FirebaseDatabase.getInstance().reference }
-    private val auth by lazy { FirebaseAuth.getInstance() }
-    private val repo by lazy { RoomsRepository() }
-    private val usersRepo by lazy { UsersRepository() }
+    private val db = FirebaseProvider.databaseRef
+    private val auth = FirebaseProvider.auth
+    private val roomsRepo = RoomsRepository()
+    private val usersRepo = UsersRepository()
 
     private var roomId: String = ""
 
@@ -103,7 +108,7 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
         }
 
         btnJoin.setOnClickListener {
-            repo.joinRoom(
+            roomsRepo.joinRoom(
                 roomId = roomId,
                 onSuccess = { Toast.makeText(requireContext(), "Joined room!", Toast.LENGTH_SHORT).show() },
                 onError = { msg -> Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show() }
@@ -111,7 +116,7 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
         }
 
         btnLeave.setOnClickListener {
-            repo.leaveRoom(
+            roomsRepo.leaveRoom(
                 roomId = roomId,
                 onSuccess = {
                     Toast.makeText(requireContext(), "Left room", Toast.LENGTH_SHORT).show()
@@ -152,7 +157,9 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
                 }
             }
 
-            override fun onCancelled(error: DatabaseError) {}
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "Failed to load current room status", Toast.LENGTH_SHORT).show()
+            }
         }
 
         currentRoomRef!!.addValueEventListener(currentRoomListener!!)
@@ -189,9 +196,10 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
                     .filter { it.isNotBlank() }
                     .joinToString(" · ")
                     .uppercase()
-                tvRoomSub.text = if (sub.isBlank()) "ROOM" else sub
+                tvRoomSub.text = sub.ifBlank { "ROOM" }
 
-                val purple = 0xFF7C3AED.toInt()
+                val purple = ContextCompat.getColor(requireContext(), R.color.purple_dark)
+                val gray = ContextCompat.getColor(requireContext(), R.color.gray_light)
 
                 if (micRequired) {
                     tvMicRequired.text = "Mic: Required"
@@ -199,8 +207,8 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
                     ivMic.setColorFilter(purple)
                 } else {
                     tvMicRequired.text = "Mic: Optional"
-                    tvMicRequired.setTextColor(0xFFB9C2CF.toInt())
-                    ivMic.setColorFilter(0xFFB9C2CF.toInt())
+                    tvMicRequired.setTextColor(gray)
+                    ivMic.setColorFilter(gray)
                 }
             }
 
@@ -231,23 +239,25 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
                     tvEmptyMembers.visibility = View.GONE
                 }
 
-                val list = mutableListOf<RoomMemberUi>()
+                val list = mutableListOf<RoomMember>()
                 for (child in snapshot.children) {
                     val userKey = child.key ?: continue
                     val nickname = child.child("nickname").getValue(String::class.java).orEmpty()
                     val username = child.child("username").getValue(String::class.java).orEmpty()
-                    list.add(RoomMemberUi(userKey = userKey, nickname = nickname, username = username))
+                    list.add(RoomMember(userKey = userKey, nickname = nickname, username = username))
                 }
 
                 val sorted = list.sortedWith(
-                    compareByDescending<RoomMemberUi> { it.userKey == myUserKey }
+                    compareByDescending<RoomMember> { it.userKey == myUserKey }
                         .thenBy { it.nickname.lowercase() }
                 )
 
                 adapter.submit(sorted)
             }
 
-            override fun onCancelled(error: DatabaseError) {}
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "Failed to load members", Toast.LENGTH_SHORT).show()
+            }
         }
 
         ref.addValueEventListener(membersListener!!)

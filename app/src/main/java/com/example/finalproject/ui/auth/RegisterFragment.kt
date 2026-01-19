@@ -1,5 +1,3 @@
-
-
 package com.example.finalproject.ui.auth
 
 import android.content.Intent
@@ -10,7 +8,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.finalproject.MainActivity
 import com.example.finalproject.R
-import com.example.finalproject.data.model.AppUser
+import com.example.finalproject.data.firebase.FirebaseProvider
+import com.example.finalproject.data.model.User
 import com.example.finalproject.data.repository.UsersRepository
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -24,7 +23,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        auth = FirebaseAuth.getInstance()
+        auth = FirebaseProvider.auth
 
         val etEmail = view.findViewById<TextInputEditText>(R.id.etEmail)
         val etUsername = view.findViewById<TextInputEditText>(R.id.etUsername)
@@ -69,7 +68,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
                     val uid = firebaseUser.uid
 
-                    val userObj = AppUser(
+                    val userObj = User(
                         uid = uid,
                         email = email,
                         username = username,

@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/background">
 
-    <!-- Back -->
     <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="44dp"
@@ -21,7 +20,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Rooms list (starts below back button) -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvRooms"
         android:layout_width="0dp"
@@ -36,7 +34,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Create room (floating button) -->
     <FrameLayout
         android:id="@+id/wrapCreateRoom"
         android:layout_width="96dp"

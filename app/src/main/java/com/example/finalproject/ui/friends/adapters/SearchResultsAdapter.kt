@@ -5,17 +5,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
-import com.example.finalproject.data.model.SearchUser
+import com.example.finalproject.data.model.SearchUserUi
 
 class SearchResultsAdapter(
-    private val onAdd: (SearchUser, (Boolean) -> Unit) -> Unit
+    private val onAdd: (SearchUserUi, (Boolean) -> Unit) -> Unit
 ) : RecyclerView.Adapter<SearchResultsAdapter.VH>() {
 
-    private val items = mutableListOf<SearchUser>()
+    private val items = mutableListOf<SearchUserUi>()
 
-    fun submit(list: List<SearchUser>) {
+    fun submit(list: List<SearchUserUi>) {
         items.clear()
         items.addAll(list)
         notifyDataSetChanged()
@@ -37,9 +38,9 @@ class SearchResultsAdapter(
         private val tvUsername = itemView.findViewById<TextView>(R.id.tvUsername)
         private val btnAdd = itemView.findViewById<Button>(R.id.btnAddFriend)
 
-        fun bind(user: SearchUser) {
-            tvNickname.text = user.nickname
-            tvUsername.text = user.username
+        fun bind(user: SearchUserUi) {
+            tvNickname.text = user.user.nickname
+            tvUsername.text = user.user.username
 
             btnAdd.setOnClickListener(null)
             btnAdd.visibility = View.VISIBLE
@@ -50,7 +51,7 @@ class SearchResultsAdapter(
                 btnAdd.isFocusable = false
                 btnAdd.alpha = 1f
                 btnAdd.background = itemView.context.getDrawable(R.drawable.bg_btn_sent)
-                btnAdd.setTextColor(0xFFB5BAC1.toInt())
+                btnAdd.setTextColor(ContextCompat.getColor(itemView.context, R.color.gray_medium))
                 return
             }
 
@@ -60,7 +61,7 @@ class SearchResultsAdapter(
                 btnAdd.isFocusable = false
                 btnAdd.alpha = 1f
                 btnAdd.background = itemView.context.getDrawable(R.drawable.bg_btn_sent)
-                btnAdd.setTextColor(0xFFB5BAC1.toInt())
+                btnAdd.setTextColor(ContextCompat.getColor(itemView.context, R.color.gray_medium))
                 return
             }
 
@@ -69,7 +70,7 @@ class SearchResultsAdapter(
             btnAdd.isFocusable = true
             btnAdd.alpha = 1f
             btnAdd.background = itemView.context.getDrawable(R.drawable.bg_btn_add)
-            btnAdd.setTextColor(0xFFFFFFFF.toInt())
+            btnAdd.setTextColor(ContextCompat.getColor(itemView.context, R.color.white))
 
             btnAdd.setOnClickListener {
                 btnAdd.text = "Sending..."
@@ -86,13 +87,13 @@ class SearchResultsAdapter(
                         btnAdd.isClickable = false
                         btnAdd.isFocusable = false
                         btnAdd.background = itemView.context.getDrawable(R.drawable.bg_btn_sent)
-                        btnAdd.setTextColor(0xFFB5BAC1.toInt())
+                        btnAdd.setTextColor(ContextCompat.getColor(itemView.context, R.color.gray_medium))
                     } else {
                         btnAdd.text = "Add friend"
                         btnAdd.isClickable = true
                         btnAdd.isFocusable = true
                         btnAdd.background = itemView.context.getDrawable(R.drawable.bg_btn_add)
-                        btnAdd.setTextColor(0xFFFFFFFF.toInt())
+                        btnAdd.setTextColor(ContextCompat.getColor(itemView.context, R.color.white))
                     }
                 }
             }

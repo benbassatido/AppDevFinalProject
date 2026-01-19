@@ -7,46 +7,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    android:padding="20dp">
+    android:padding="@dimen/padding_xlarge">
 
-    <!-- ===== TITLE ===== -->
     <TextView
         android:id="@+id/tvHomeTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="PERSONALIZE SELECT\nEXPERIENCE"
+        android:text="@string/home_title"
         android:textColor="#EFFFFFFF"
-        android:textSize="28sp"
+        android:textSize="@dimen/text_size_xxlarge"
         android:textStyle="bold"
-        android:letterSpacing="0.08"
-        android:layout_marginTop="26dp"
+        android:letterSpacing="@dimen/letter_spacing_medium"
+        android:layout_marginTop="@dimen/spacing_massive"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- HELLO -->
     <TextView
         android:id="@+id/tvHelloUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:text="Hello Player"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:text="@string/home_hello"
         android:textColor="@color/white"
         android:textStyle="bold"
-        android:textSize="22sp"
+        android:textSize="@dimen/text_size_xlarge"
         app:layout_constraintTop_toBottomOf="@id/tvHomeTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- SEARCH (purple outline like the mock) -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilSearch"
         style="@style/Widget.App.LoginTextInputLayout"
         android:theme="@style/MyTextInputThemeOverlay"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="@dimen/spacing_xlarge"
         app:boxBackgroundMode="outline"
         app:startIconDrawable="@android:drawable/ic_menu_search"
         app:startIconTint="@color/neon_purple"
@@ -57,35 +54,33 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etSearch"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:hint="SEARCH GAMES..."
+            android:layout_height="@dimen/button_height_normal"
+            android:hint="@string/hint_search_games"
             android:inputType="text"
             android:textColor="@color/white"
             android:textColorHint="#9AA3B2"
             android:background="@null"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- GAMES GRID -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvGames"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="@dimen/spacing_xlarge"
         android:clipToPadding="false"
-        android:paddingBottom="10dp"
+        android:paddingBottom="@dimen/spacing_small"
         app:layout_constraintTop_toBottomOf="@id/tilSearch"
         app:layout_constraintBottom_toTopOf="@id/wrapViewFriends"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:listitem="@layout/item_game_logo"/>
 
-    <!-- VIEW FRIENDS (same glow style as Login primary) -->
     <FrameLayout
         android:id="@+id/wrapViewFriends"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:padding="12dp"
+        android:layout_marginTop="@dimen/spacing_xlarge"
+        android:padding="@dimen/padding_small"
         android:background="@drawable/bg_btn_outer_glow_primary"
         app:layout_constraintTop_toBottomOf="@id/rvGames"
         app:layout_constraintStart_toStartOf="parent"
@@ -94,26 +89,25 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnViewFriends"
             android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:text="VIEW FRIENDS"
+            android:layout_height="@dimen/button_height_large"
+            android:text="@string/btn_view_friends"
             android:textAllCaps="false"
             android:textStyle="bold"
             android:textColor="@color/white"
             android:includeFontPadding="false"
-            app:cornerRadius="30dp"
+            app:cornerRadius="@dimen/button_corner_radius"
             app:backgroundTint="@null"
             android:background="@drawable/bg_btn_body_primary"
             android:elevation="0dp"/>
     </FrameLayout>
 
-    <!-- LOG OUT (red glow like mock) -->
     <FrameLayout
         android:id="@+id/wrapLogout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="18dp"
-        android:padding="12dp"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:layout_marginBottom="@dimen/spacing_xlarge"
+        android:padding="@dimen/padding_small"
         android:background="@drawable/bg_btn_outer_glow_red"
         app:layout_constraintTop_toBottomOf="@id/wrapViewFriends"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -123,13 +117,13 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:text="LOG OUT"
+            android:layout_height="@dimen/button_height_large"
+            android:text="@string/btn_log_out"
             android:textAllCaps="false"
             android:textStyle="bold"
             android:textColor="@color/white"
             android:includeFontPadding="false"
-            app:cornerRadius="30dp"
+            app:cornerRadius="@dimen/button_corner_radius"
             app:backgroundTint="@null"
             android:background="@drawable/bg_btn_body_red"
             android:elevation="0dp"/>

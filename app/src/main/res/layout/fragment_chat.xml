@@ -7,29 +7,29 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="@dimen/button_height_normal"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:paddingStart="@dimen/padding_normal"
+        android:paddingEnd="@dimen/padding_normal"
         android:background="@drawable/background">
 
         <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="@dimen/icon_size_medium"
+            android:layout_height="@dimen/icon_size_medium"
             android:background="@android:color/transparent"
             android:src="@android:drawable/ic_media_previous"
-            android:contentDescription="Back" />
+            android:contentDescription="@string/cd_back" />
 
         <TextView
             android:id="@+id/tvChatTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Player"
+            android:text="@string/chat_player_title"
             android:textColor="#FFFFFF"
             android:textStyle="bold"
-            android:textSize="18sp" />
+            android:textSize="@dimen/text_size_medium" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -38,39 +38,39 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@drawable/background"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
+        android:paddingTop="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_small"
+        android:paddingStart="@dimen/padding_small"
+        android:paddingEnd="@dimen/padding_small"
         android:clipToPadding="false" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp"
+        android:padding="@dimen/padding_small"
         android:background="#0F0F10">
 
         <EditText
             android:id="@+id/etMessage"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/button_height_medium"
             android:layout_weight="1"
-            android:hint="Type a message..."
+            android:hint="@string/hint_type_message"
             android:textColor="#FFFFFF"
             android:textColorHint="#777777"
             android:background="@drawable/background"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
+            android:paddingStart="@dimen/padding_medium"
+            android:paddingEnd="@dimen/padding_medium"
             android:singleLine="true" />
 
         <Button
             android:id="@+id/btnSend"
-            android:layout_width="90dp"
-            android:layout_height="48dp"
-            android:text="Send"
+            android:layout_width="@dimen/button_width_small"
+            android:layout_height="@dimen/button_height_medium"
+            android:text="@string/btn_send"
             android:textAllCaps="false"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="@dimen/spacing_small"
             android:background="@drawable/bg_btn_body_primary"
             android:backgroundTint="@null"
             android:textColor="#FFFFFF" />

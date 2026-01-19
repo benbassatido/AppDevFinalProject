@@ -1,10 +1,8 @@
 package com.example.finalproject.ui.games
 
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,10 +12,19 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.example.finalproject.R
 import com.example.finalproject.data.repository.GameOptionsRepository
+import com.example.finalproject.ui.common.ViewFactory
 import com.example.finalproject.ui.rooms.RoomsFragment
-import com.google.android.material.button.MaterialButton
 
 class GameDetailsFragment : Fragment(R.layout.fragment_game_details) {
+
+    companion object {
+        private const val CS2_TEAM_SIZE = 5
+        private const val COD_TEAM_SIZE = 6
+        private const val CONQUEST_PLAYERS = 32
+        private const val BREAKTHROUGH_PLAYERS = 24
+        private const val RUSH_PLAYERS = 12
+        private const val DOMINATION_PLAYERS = 8
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -89,70 +96,37 @@ class GameDetailsFragment : Fragment(R.layout.fragment_game_details) {
     }
 
     private fun maxPlayersFor(gameId: String, variantId: String, partyType: String): Int {
-        if (gameId == "cs2") return 5
-        if (gameId == "cod_bo7") return 6
+        if (gameId == "cs2") return CS2_TEAM_SIZE
+        if (gameId == "cod_bo7") return COD_TEAM_SIZE
 
         if (gameId == "battlefield_6") {
             val t = partyType.lowercase()
             return if (variantId == "mp") {
                 when {
-                    t.contains("conquest") -> 32
-                    t.contains("breakthrough") -> 24
-                    t.contains("rush") -> 12
-                    t.contains("domination") -> 8
+                    t.contains("conquest") -> CONQUEST_PLAYERS
+                    t.contains("breakthrough") -> BREAKTHROUGH_PLAYERS
+                    t.contains("rush") -> RUSH_PLAYERS
+                    t.contains("domination") -> DOMINATION_PLAYERS
                     else -> 0
                 }
             } else {
-                when {
-                    t.contains("duo") -> 2
-                    t.contains("trio") -> 3
-                    t.contains("quad") || t.contains("squad") || t.contains("quads") || t.contains("squads") -> 4
-                    else -> 0
-                }
+                GameOptionsRepository.maxPlayersForPartyType(partyType)
             }
         }
 
-        val t = partyType.lowercase()
-        return when {
-            t.contains("duo") -> 2
-            t.contains("trio") -> 3
-            t.contains("quad") || t.contains("squad") || t.contains("quads") || t.contains("squads") -> 4
-            else -> 0
-        }
+        return GameOptionsRepository.maxPlayersForPartyType(partyType)
     }
 
-    private fun buildGlowPillButton(text: String, onClick: () -> Unit): FrameLayout {
-        val wrap = FrameLayout(requireContext()).apply {
-            setBackgroundResource(R.drawable.bg_btn_outer_glow_primary)
-            setPadding(dpToPx(10), dpToPx(10), dpToPx(10), dpToPx(10))
-            foregroundGravity = Gravity.CENTER
-        }
-
-        val btn = MaterialButton(requireContext()).apply {
-            this.text = text
-            isAllCaps = false
-            textSize = 13f
-            setTextColor(0xFFFFFFFF.toInt())
-            setOnClickListener { onClick() }
-
-            backgroundTintList = null
-            setBackgroundResource(R.drawable.bg_btn_body_primary)
-
-            minHeight = dpToPx(44)
-            setPadding(dpToPx(18), dpToPx(10), dpToPx(18), dpToPx(10))
-            elevation = 0f
-        }
-
-        val lp = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            dpToPx(44)
+    private fun buildGlowPillButton(text: String, onClick: () -> Unit) =
+        ViewFactory.buildGlowPillButton(
+            context = requireContext(),
+            text = text,
+            textSize = 13f,
+            isAllCaps = false,
+            minWidth = 0,
+            minHeight = 44,
+            horizontalPadding = 18,
+            verticalPadding = 10,
+            onClick = onClick
         )
-        lp.gravity = Gravity.CENTER
-        btn.layoutParams = lp
-
-        wrap.addView(btn)
-        return wrap
-    }
-
-    private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
 }

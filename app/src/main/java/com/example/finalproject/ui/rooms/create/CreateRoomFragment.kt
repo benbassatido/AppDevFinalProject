@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.example.finalproject.R
+import com.example.finalproject.data.firebase.FirebaseProvider
 import com.example.finalproject.data.model.Room
 import com.example.finalproject.data.repository.RoomsRepository
 import com.example.finalproject.data.repository.UsersRepository
@@ -14,12 +15,12 @@ import com.example.finalproject.ui.rooms.RoomFragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 
 class CreateRoomFragment : Fragment(R.layout.fragment_create_room) {
 
-    private val repo = RoomsRepository()
+    private val auth = FirebaseProvider.auth
+    private val database = FirebaseProvider.database
+    private val roomsRepo = RoomsRepository()
     private val usersRepo = UsersRepository()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,7 +40,7 @@ class CreateRoomFragment : Fragment(R.layout.fragment_create_room) {
 
         btnBack.setOnClickListener { parentFragmentManager.popBackStack() }
 
-        val uid = FirebaseAuth.getInstance().currentUser?.uid.orEmpty()
+        val uid = auth.currentUser?.uid.orEmpty()
 
         btnCreate.setOnClickListener {
             val title = etTitle.text?.toString()?.trim().orEmpty()
@@ -65,9 +66,7 @@ class CreateRoomFragment : Fragment(R.layout.fragment_create_room) {
             usersRepo.ensureUserKey(
                 uid = uid,
                 onSuccess = { userKey ->
-                    FirebaseDatabase.getInstance().reference
-                        .child("users").child(userKey).child("nickname")
-                        .get()
+                    database.reference.child("users").child(userKey).child("nickname").get()
                         .addOnSuccessListener { snap ->
                             val nickname = snap.getValue(String::class.java) ?: "Owner"
 
@@ -83,10 +82,10 @@ class CreateRoomFragment : Fragment(R.layout.fragment_create_room) {
                                 ownerName = nickname
                             )
 
-                            repo.createRoom(
+                            roomsRepo.createRoom(
                                 room = room,
                                 onSuccess = { roomId ->
-                                    repo.joinRoom(
+                                    roomsRepo.joinRoom(
                                         roomId = roomId,
                                         onSuccess = {
                                             btnCreate.isEnabled = true

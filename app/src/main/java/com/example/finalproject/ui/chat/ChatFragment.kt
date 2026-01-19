@@ -5,25 +5,29 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
+import com.example.finalproject.data.firebase.FirebaseProvider
 import com.example.finalproject.data.model.ChatMessage
 import com.example.finalproject.data.repository.ChatRepository
 import com.example.finalproject.data.repository.UsersRepository
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.launch
 
 class ChatFragment : Fragment(R.layout.fragment_chat) {
 
+    private val auth = FirebaseProvider.auth
     private val usersRepo = UsersRepository()
-    private val repo = ChatRepository(usersRepo = usersRepo)
+    private val chatRepo = ChatRepository(usersRepo = usersRepo)
 
-    private val myUid: String by lazy { FirebaseAuth.getInstance().currentUser!!.uid }
+    private val myUid: String by lazy {
+        auth.currentUser?.uid ?: throw IllegalStateException("Not logged in")
+    }
     private var myUserKey: String = ""
 
     private lateinit var tvChatTitle: TextView
@@ -60,13 +64,13 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             myUserKey = usersRepo.ensureUserKeySuspend(myUid)
-            chatId = repo.chatIdFor(myUserKey, otherUserKey)
+            chatId = chatRepo.chatIdFor(myUserKey, otherUserKey)
 
             adapter = MessagesAdapter(myUserKey, otherNickname)
             rvMessages.layoutManager = LinearLayoutManager(requireContext())
             rvMessages.adapter = adapter
 
-            repo.ensureChat(chatId, myUserKey, otherUserKey)
+            chatRepo.ensureChat(chatId, myUserKey, otherUserKey)
 
             startListening()
         }
@@ -75,25 +79,27 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             val text = etMessage.text?.toString().orEmpty()
             etMessage.setText("")
             viewLifecycleOwner.lifecycleScope.launch {
-                repo.sendMessage(chatId, text)
+                chatRepo.sendMessage(chatId, text)
             }
         }
     }
 
     private fun startListening() {
-        listener = repo.listenMessages(
+        listener = chatRepo.listenMessages(
             chatId = chatId,
             limit = 100,
             onMessages = { list: List<ChatMessage> ->
                 adapter.submit(list)
                 if (list.isNotEmpty()) rvMessages.scrollToPosition(list.size - 1)
             },
-            onError = { _: DatabaseError -> }
+            onError = { error: DatabaseError ->
+                Toast.makeText(requireContext(), "Failed to load messages: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
         )
     }
 
     override fun onDestroyView() {
-        listener?.let { repo.stopListening(chatId, it) }
+        listener?.let { chatRepo.stopListening(chatId, it) }
         listener = null
         super.onDestroyView()
     }

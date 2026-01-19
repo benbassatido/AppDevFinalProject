@@ -4,25 +4,25 @@
     android:id="@+id/cardFriend"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="14dp"
+    android:layout_marginBottom="@dimen/spacing_normal"
     app:cardBackgroundColor="#121214"
-    app:cardCornerRadius="16dp"
-    app:strokeWidth="2dp"
+    app:cardCornerRadius="@dimen/spacing_large"
+    app:strokeWidth="@dimen/card_stroke_width_thin"
     app:strokeColor="#7C3AED"
     app:cardElevation="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="@dimen/padding_normal">
 
         <TextView
             android:id="@+id/tvNickname"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="synX"
+            android:text="@string/item_friend_default_nickname"
             android:textStyle="bold"
-            android:textSize="16sp"
+            android:textSize="@dimen/text_size_normal"
             android:textColor="#FFFFFF"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnDeleteFriend"
@@ -32,7 +32,7 @@
             android:id="@+id/tvUsername"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="IdoBenBassat"
+            android:text="@string/item_friend_default_username"
             android:textSize="13sp"
             android:textColor="#B5BAC1"
             app:layout_constraintStart_toStartOf="@id/tvNickname"
@@ -42,8 +42,8 @@
 
         <ImageButton
             android:id="@+id/btnDeleteFriend"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="@dimen/icon_size_medium"
+            android:layout_height="@dimen/icon_size_medium"
             android:background="@android:color/transparent"
             android:src="@android:drawable/ic_menu_delete"
             app:tint="#FF4D4D"

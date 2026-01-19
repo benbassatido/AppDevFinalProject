@@ -8,13 +8,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
-import com.example.finalproject.data.model.Friend
+import com.example.finalproject.data.model.User
 import com.example.finalproject.data.repository.FriendRequestsRepository
 import kotlinx.coroutines.launch
 
 class FriendRequestsFragment : Fragment(R.layout.fragment_friend_requests) {
 
-    private val repo = FriendRequestsRepository()
+    private val friendRequestsRepo = FriendRequestsRepository()
 
     private lateinit var rvRequests: RecyclerView
     private lateinit var tvEmpty: TextView
@@ -39,15 +39,15 @@ class FriendRequestsFragment : Fragment(R.layout.fragment_friend_requests) {
 
     private fun loadRequests() {
         viewLifecycleOwner.lifecycleScope.launch {
-            val list = repo.getIncomingRequests()
+            val list = friendRequestsRepo.getIncomingRequests()
             adapter.submit(list)
             tvEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 
-    private fun handleAccept(req: Friend) {
+    private fun handleAccept(req: User) {
         viewLifecycleOwner.lifecycleScope.launch {
-            repo.acceptRequest(req)
+            friendRequestsRepo.acceptRequest(req)
             loadRequests()
 
             parentFragmentManager.setFragmentResult("friends_refresh", Bundle())
@@ -55,9 +55,9 @@ class FriendRequestsFragment : Fragment(R.layout.fragment_friend_requests) {
     }
 
 
-    private fun handleDecline(req: Friend) {
+    private fun handleDecline(req: User) {
         viewLifecycleOwner.lifecycleScope.launch {
-            repo.declineRequest(req)
+            friendRequestsRepo.declineRequest(req)
             loadRequests()
 
             parentFragmentManager.setFragmentResult("friends_refresh", Bundle())

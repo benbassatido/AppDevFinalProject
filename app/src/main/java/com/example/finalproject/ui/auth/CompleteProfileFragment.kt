@@ -8,18 +8,17 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import com.example.finalproject.MainActivity
 import com.example.finalproject.R
-import com.example.finalproject.data.model.AppUser
+import com.example.finalproject.data.firebase.FirebaseProvider
+import com.example.finalproject.data.model.User
 import com.example.finalproject.data.repository.UsersRepository
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 
 class CompleteProfileFragment : Fragment(R.layout.fragment_complete_profile) {
 
-    private val auth by lazy { FirebaseAuth.getInstance() }
-    private val db by lazy { FirebaseDatabase.getInstance().reference }
+    private val auth = FirebaseProvider.auth
+    private val db = FirebaseProvider.databaseRef
     private val usersRepo = UsersRepository()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -87,7 +86,7 @@ class CompleteProfileFragment : Fragment(R.layout.fragment_complete_profile) {
                                 return@addOnSuccessListener
                             }
 
-                            val userObj = AppUser(
+                            val userObj = User(
                                 uid = uid,
                                 email = email,
                                 username = username,

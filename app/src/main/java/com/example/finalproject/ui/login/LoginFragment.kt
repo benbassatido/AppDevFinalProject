@@ -8,10 +8,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import com.example.finalproject.data.firebase.FirebaseProvider
 import com.example.finalproject.data.repository.UsersRepository
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.finalproject.MainActivity
 import com.example.finalproject.R
+import com.example.finalproject.ui.auth.AuthHelper
 import com.example.finalproject.ui.auth.CompleteProfileFragment
 import com.example.finalproject.ui.auth.RegisterFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -21,7 +24,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.database.FirebaseDatabase
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
@@ -63,7 +65,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        auth = FirebaseAuth.getInstance()
+        auth = FirebaseProvider.auth
 
         val ivAppLogo = view.findViewById<ImageView>(R.id.ivAppLogo)
         val etEmail = view.findViewById<TextInputEditText>(R.id.etEmail)
@@ -147,38 +149,23 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
     private fun routeAfterLogin() {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        val uid = auth.currentUser?.uid
         if (uid.isNullOrBlank()) {
             goToHome()
             return
         }
 
-        usersRepo.ensureUserKey(
+        AuthHelper.checkProfileCompleteness(
             uid = uid,
-            onSuccess = { userKey ->
-                FirebaseDatabase.getInstance().reference
-                    .child("users")
-                    .child(userKey)
-                    .get()
-                    .addOnSuccessListener { snap ->
-                        val username = snap.child("username").getValue(String::class.java).orEmpty()
-                        val nickname = snap.child("nickname").getValue(String::class.java).orEmpty()
-
-                        if (username.isBlank() || nickname.isBlank()) {
-                            parentFragmentManager.beginTransaction()
-                                .replace(R.id.authFragmentContainer, CompleteProfileFragment())
-                                .commit()
-                        } else {
-                            goToHome()
-                        }
-                    }
-                    .addOnFailureListener {
-                        goToHome()
-                    }
+            usersRepo = usersRepo,
+            scope = viewLifecycleOwner.lifecycleScope,
+            onProfileIncomplete = {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.authFragmentContainer, CompleteProfileFragment())
+                    .commit()
             },
-            onError = {
-                goToHome()
-            }
+            onProfileComplete = { goToHome() },
+            onError = { goToHome() }
         )
     }
 

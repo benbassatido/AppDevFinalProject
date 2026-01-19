@@ -12,6 +12,10 @@
     <color name="white_70">#B3FFFFFF</color>
     <color name="purple_primary">#8B5CF6</color>
     <color name="purple_primary_40">#668B5CF6</color>
+    <color name="purple_dark">#7C3AED</color>
+    <color name="gray_light">#B9C2CF</color>
+    <color name="gray_medium">#B5BAC1</color>
+    <color name="cyan_bright">#39C6FF</color>
 
 
 </resources>

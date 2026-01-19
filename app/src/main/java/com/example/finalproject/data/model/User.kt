@@ -1,10 +1,12 @@
 package com.example.finalproject.data.model
 
-data class SearchUser(
+
+data class User(
+    val userKey: String = "",
     val uid: String = "",
+    val email: String = "",
     val username: String = "",
     val nickname: String = "",
     val nicknameLower: String = "",
-    var requestSent: Boolean = false,
-    var isFriend: Boolean = false
+    val createdAt: Long = 0L
 )

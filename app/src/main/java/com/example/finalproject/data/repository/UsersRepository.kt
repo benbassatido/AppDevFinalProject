@@ -1,6 +1,7 @@
 package com.example.finalproject.data.repository
 
-import com.example.finalproject.data.model.AppUser
+import com.example.finalproject.data.firebase.FirebaseProvider
+import com.example.finalproject.data.model.User
 import com.google.firebase.database.*
 import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.resumeWithException
@@ -8,7 +9,7 @@ import kotlin.coroutines.resumeWithException
 
 class UsersRepository {
 
-    private val root = FirebaseDatabase.getInstance().reference
+    private val root = FirebaseProvider.databaseRef
     private val usersRef = root.child("users")
     private val uidToUserRef = root.child("uid_to_user")
 
@@ -24,21 +25,6 @@ class UsersRepository {
         var i = 1
         while (used.contains(i)) i++
         return i
-    }
-
-
-    fun getUserKeyByUid(
-        uid: String,
-        onSuccess: (String?) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        uidToUserRef.child(uid).get()
-            .addOnSuccessListener { snap ->
-                onSuccess(snap.getValue(String::class.java))
-            }
-            .addOnFailureListener { e ->
-                onError(e.message ?: "Failed to read uid_to_user")
-            }
     }
 
 
@@ -95,7 +81,7 @@ class UsersRepository {
 
 
     fun createNumberedUser(
-        user: AppUser,
+        user: User,
         onSuccess: (userKey: String) -> Unit,
         onError: (String) -> Unit
     ) {
@@ -105,7 +91,6 @@ class UsersRepository {
             return
         }
 
-        // If mapping exists, don't create again
         uidToUserRef.child(uid).get()
             .addOnSuccessListener { mapSnap ->
                 val existing = mapSnap.getValue(String::class.java)
@@ -117,7 +102,6 @@ class UsersRepository {
                     return@addOnSuccessListener
                 }
 
-                // Create new slot user_X
                 usersRef.get()
                     .addOnSuccessListener { usersSnap ->
                         val next = findNextUserNumber(usersSnap)
@@ -141,27 +125,26 @@ class UsersRepository {
             }
     }
 
-
-    fun readUserByUid(
-        uid: String,
-        onSuccess: (AppUser?) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        ensureUserKey(
-            uid = uid,
-            onSuccess = { userKey ->
-                usersRef.child(userKey).get()
-                    .addOnSuccessListener { snap ->
-                        onSuccess(snap.getValue(AppUser::class.java))
-                    }
-                    .addOnFailureListener { e ->
-                        onError(e.message ?: "Failed to read user")
-                    }
-            },
-            onError = onError
-        )
+    suspend fun getUserNickname(userKey: String): String? {
+        return try {
+            usersRef.child(userKey).child("nickname")
+                .get().await()
+                .getValue(String::class.java)
+        } catch (e: Exception) {
+            null
+        }
     }
 
+    suspend fun checkProfileComplete(userKey: String): Boolean {
+        return try {
+            val snap = usersRef.child(userKey).get().await()
+            val username = snap.child("username").getValue(String::class.java).orEmpty()
+            val nickname = snap.child("nickname").getValue(String::class.java).orEmpty()
+            username.isNotBlank() && nickname.isNotBlank()
+        } catch (e: Exception) {
+            false
+        }
+    }
 
     suspend fun ensureUserKeySuspend(uid: String): String {
         return kotlinx.coroutines.suspendCancellableCoroutine { cont ->
@@ -170,14 +153,6 @@ class UsersRepository {
                 onSuccess = { cont.resume(it, null) },
                 onError = { cont.resumeWithException(IllegalStateException(it)) }
             )
-        }
-    }
-
-    suspend fun getUserKeyByUidSuspend(uid: String): String? {
-        return try {
-            uidToUserRef.child(uid).get().await().getValue(String::class.java)
-        } catch (_: Exception) {
-            null
         }
     }
 

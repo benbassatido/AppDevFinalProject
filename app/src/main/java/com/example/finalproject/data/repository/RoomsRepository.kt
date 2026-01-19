@@ -1,19 +1,20 @@
 package com.example.finalproject.data.repository
 
+import com.example.finalproject.data.firebase.FirebaseProvider
 import com.example.finalproject.data.model.Room
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 class RoomsRepository {
 
-    private val db = FirebaseDatabase.getInstance()
-    private val rootRef = db.reference
+    private val db = FirebaseProvider.database
+    private val rootRef = FirebaseProvider.databaseRef
 
     private val roomsRef = rootRef.child("rooms")
     private val membersRef = rootRef.child("room_members")
     private val userCurrentRoomRef = rootRef.child("user_current_room")
 
-    private val auth = FirebaseAuth.getInstance()
+    private val auth = FirebaseProvider.auth
     private fun uid(): String = auth.currentUser?.uid.orEmpty()
 
     private val usersRepo = UsersRepository()
@@ -131,7 +132,6 @@ class RoomsRepository {
                                     return@addOnSuccessListener
                                 }
 
-                                // store member info for easy UI
                                 rootRef.child("users").child(userKey).get()
                                     .addOnSuccessListener { userSnap ->
                                         val nickname = userSnap.child("nickname").getValue(String::class.java).orEmpty()

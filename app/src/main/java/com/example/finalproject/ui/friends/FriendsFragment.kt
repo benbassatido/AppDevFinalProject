@@ -9,6 +9,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -83,7 +85,10 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
             val width = paint.measureText(tvTitle.text.toString())
             paint.shader = LinearGradient(
                 0f, 0f, width, tvTitle.textSize,
-                intArrayOf(0xFF39C6FF.toInt(), 0xFF7C3AED.toInt()),
+                intArrayOf(
+                    ContextCompat.getColor(requireContext(), R.color.cyan_bright),
+                    ContextCompat.getColor(requireContext(), R.color.purple_dark)
+                ),
                 null,
                 Shader.TileMode.CLAMP
             )
@@ -144,11 +149,11 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
         searchAdapter = SearchResultsAdapter { user, done ->
             viewLifecycleOwner.lifecycleScope.launch {
                 try {
-                    if (friendsUids.contains(user.uid)) {
+                    if (friendsUids.contains(user.user.userKey)) {
                         done(false)
                         return@launch
                     }
-                    searchRepo.sendFriendRequest(user.uid)
+                    searchRepo.sendFriendRequest(user.user.userKey)
                     done(true)
                 } catch (_: Exception) {
                     done(false)
@@ -185,8 +190,8 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
                         val outgoingSet = searchRepo.getMyOutgoingRequestsSet()
 
                         val fixed = results.map { u ->
-                            u.isFriend = friendsUids.contains(u.uid)
-                            u.requestSent = outgoingSet.contains(u.uid)
+                            u.isFriend = friendsUids.contains(u.user.userKey)
+                            u.requestSent = outgoingSet.contains(u.user.userKey)
                             u
                         }
 
@@ -218,10 +223,10 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
         requestsContainer.visibility = View.GONE
 
         btnTabFriends.setBackgroundResource(R.drawable.bg_tab_selected)
-        btnTabFriends.setTextColor(0xFF39C6FF.toInt())
+        btnTabFriends.setTextColor(ContextCompat.getColor(requireContext(), R.color.cyan_bright))
 
         btnTabRequests.setBackgroundResource(R.drawable.bg_tab_unselected)
-        btnTabRequests.setTextColor(0xFFFFFFFF.toInt())
+        btnTabRequests.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
 
         loadFriends()
     }
@@ -232,10 +237,10 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
         requestsContainer.visibility = View.VISIBLE
 
         btnTabRequests.setBackgroundResource(R.drawable.bg_tab_selected)
-        btnTabRequests.setTextColor(0xFF39C6FF.toInt())
+        btnTabRequests.setTextColor(ContextCompat.getColor(requireContext(), R.color.cyan_bright))
 
         btnTabFriends.setBackgroundResource(R.drawable.bg_tab_unselected)
-        btnTabFriends.setTextColor(0xFFFFFFFF.toInt())
+        btnTabFriends.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
 
         val existing = childFragmentManager.findFragmentById(R.id.requestsContainer)
         if (existing !is FriendRequestsFragment) {
@@ -291,7 +296,8 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
                 friendsUids.addAll(list.map { it.userKey })
 
                 tvEmptyFriends.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Failed to load friends", Toast.LENGTH_SHORT).show()
             }
         }
     }

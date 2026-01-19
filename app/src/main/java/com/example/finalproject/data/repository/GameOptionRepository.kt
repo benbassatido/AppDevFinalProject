@@ -1,10 +1,7 @@
 // GameOptionRepository.kt
 package com.example.finalproject.data.repository
 
-data class GameOption(
-    val id: String,
-    val title: String
-)
+import com.example.finalproject.data.model.GameOption
 
 object GameOptionsRepository {
 
@@ -111,5 +108,16 @@ object GameOptionsRepository {
 
     fun getOptions(gameId: String, variantId: String): List<GameOption> {
         return optionsByGameAndVariant[gameId]?.get(variantId).orEmpty()
+    }
+
+
+    fun maxPlayersForPartyType(partyType: String): Int {
+        val t = partyType.lowercase()
+        return when {
+            t.contains("duo") -> 2
+            t.contains("trio") -> 3
+            t.contains("quad") || t.contains("squad") -> 4
+            else -> 0
+        }
     }
 }

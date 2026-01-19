@@ -6,20 +6,15 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
-
-data class RoomMemberUi(
-    val userKey: String,      // user_1, user_2...
-    val nickname: String,
-    val username: String
-)
+import com.example.finalproject.data.model.RoomMember
 
 class RoomMembersAdapter(
     private val myUserKey: String?
 ) : RecyclerView.Adapter<RoomMembersAdapter.VH>() {
 
-    private val items = mutableListOf<RoomMemberUi>()
+    private val items = mutableListOf<RoomMember>()
 
-    fun submit(list: List<RoomMemberUi>) {
+    fun submit(list: List<RoomMember>) {
         items.clear()
         items.addAll(list)
         notifyDataSetChanged()
@@ -42,7 +37,7 @@ class RoomMembersAdapter(
         private val tvUsername = itemView.findViewById<TextView>(R.id.tvUsername)
         private val tvMeBadge = itemView.findViewById<TextView>(R.id.tvMeBadge)
 
-        fun bind(item: RoomMemberUi, myUserKey: String?) {
+        fun bind(item: RoomMember, myUserKey: String?) {
             tvNickname.text = item.nickname.ifBlank { "Player" }
             tvUsername.text = "@${item.username.ifBlank { "user" }}"
 

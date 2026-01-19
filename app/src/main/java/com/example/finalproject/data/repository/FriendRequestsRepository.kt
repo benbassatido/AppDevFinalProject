@@ -1,39 +1,36 @@
 package com.example.finalproject.data.repository
 
-import com.example.finalproject.data.model.Friend
+import com.example.finalproject.data.firebase.FirebaseProvider
+import com.example.finalproject.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
 
 class FriendRequestsRepository(
-    private val db: FirebaseDatabase = FirebaseDatabase.getInstance(),
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
-    private val usersRepo: UsersRepository = UsersRepository()
-) {
-    private fun myUid(): String =
-        auth.currentUser?.uid ?: throw IllegalStateException("Not logged in")
+    private val db: FirebaseDatabase = FirebaseProvider.database,
+    auth: FirebaseAuth = FirebaseProvider.auth,
+    usersRepo: UsersRepository = UsersRepository()
+) : BaseRepository(auth, usersRepo) {
 
-    private suspend fun myUserKey(): String = usersRepo.ensureUserKeySuspend(myUid())
-
-    suspend fun getIncomingRequests(): List<Friend> {
+    suspend fun getIncomingRequests(): List<User> {
         val meKey = myUserKey()
 
         val snap = db.reference.child("users").child(meKey)
             .child("friend_requests_in")
             .get().await()
 
-        val list = mutableListOf<Friend>()
+        val list = mutableListOf<User>()
         for (child in snap.children) {
             val otherKey = child.key.orEmpty()
             val nickname = child.child("nickname").getValue(String::class.java) ?: ""
             val username = child.child("username").getValue(String::class.java) ?: ""
             val createdAt = child.child("createdAt").getValue(Long::class.java) ?: 0L
-            list.add(Friend(userKey = otherKey, nickname = nickname, username = username, createdAt = createdAt))
+            list.add(User(userKey = otherKey, nickname = nickname, username = username, createdAt = createdAt))
         }
         return list.sortedByDescending { it.createdAt }
     }
 
-    suspend fun acceptRequest(req: Friend) {
+    suspend fun acceptRequest(req: User) {
         val meKey = myUserKey()
         val otherKey = req.userKey
         if (otherKey.isBlank() || otherKey == meKey) return
@@ -74,7 +71,7 @@ class FriendRequestsRepository(
         root.updateChildren(updates).await()
     }
 
-    suspend fun declineRequest(req: Friend) {
+    suspend fun declineRequest(req: User) {
         val meKey = myUserKey()
         val otherKey = req.userKey
         if (otherKey.isBlank() || otherKey == meKey) return

@@ -9,13 +9,19 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
+import com.example.finalproject.data.firebase.FirebaseProvider
 import com.example.finalproject.data.model.Room
+import com.example.finalproject.data.repository.GameOptionsRepository
+import com.example.finalproject.data.repository.UsersRepository
 import com.example.finalproject.ui.rooms.create.CreateRoomFragment
 import com.google.android.material.button.MaterialButton
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 class RoomsFragment : Fragment(R.layout.fragment_rooms) {
+
+    private val auth = FirebaseProvider.auth
+    private val database = FirebaseProvider.database
+    private val usersRepo = UsersRepository()
 
     private lateinit var adapter: RoomsAdapter
     private lateinit var btnBack: ImageButton
@@ -90,17 +96,16 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
 
         roomsQuery =
             if (!gameId.isNullOrBlank())
-                FirebaseDatabase.getInstance().getReference("rooms").orderByChild("gameId").equalTo(gameId)
+                database.getReference("rooms").orderByChild("gameId").equalTo(gameId)
             else
-                FirebaseDatabase.getInstance().getReference("rooms")
+                database.getReference("rooms")
 
         listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val list = mutableListOf<Room>()
 
                 for (child in snapshot.children) {
-                    val room = child.getValue(Room::class.java) ?: continue
-                    room.id = child.key.orEmpty()
+                    val room = child.getValue(Room::class.java)?.copy(id = child.key.orEmpty()) ?: continue
 
                     if (room.status != "open") continue
 
@@ -126,7 +131,7 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
     }
 
     private fun listenToMembersCounts() {
-        membersRef = FirebaseDatabase.getInstance().getReference("room_members")
+        membersRef = database.getReference("room_members")
 
         membersListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -137,7 +142,7 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
                         room.maxPlayers > 0 -> room.maxPlayers
                         maxPlayers > 0 -> maxPlayers
                         room.gameId == "cs2" -> 5
-                        else -> partyTypeToMaxPlayers(room.partyType)
+                        else -> GameOptionsRepository.maxPlayersForPartyType(room.partyType)
                     }
 
                     room.copy(currentPlayers = count, maxPlayers = max)
@@ -148,32 +153,22 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
                 adapter.submitList(updated)
             }
 
-            override fun onCancelled(error: DatabaseError) {}
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(context, "Failed to load current room", Toast.LENGTH_SHORT).show()
+                    }
         }
 
         membersRef!!.addValueEventListener(membersListener!!)
     }
 
-    private fun partyTypeToMaxPlayers(partyType: String): Int {
-        val t = partyType.lowercase()
-        return when {
-            t.contains("duo") -> 2
-            t.contains("trio") -> 3
-            t.contains("quad") || t.contains("squad") || t.contains("quads") || t.contains("squads") -> 4
-            else -> 0
-        }
-    }
 
     private fun listenToCurrentRoom() {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val usersRepo = com.example.finalproject.data.repository.UsersRepository()
+        val uid = auth.currentUser?.uid ?: return
 
         usersRepo.ensureUserKey(
             uid = uid,
             onSuccess = { userKey ->
-                currentRoomRef = FirebaseDatabase.getInstance()
-                    .getReference("user_current_room")
-                    .child(userKey)
+                currentRoomRef = database.getReference("user_current_room").child(userKey)
 
                 currentRoomListener = object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -181,7 +176,9 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
                         adapter.setCurrentRoomId(currentRoomId)
                     }
 
-                    override fun onCancelled(error: DatabaseError) {}
+                    override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(context, "Failed to load member counts", Toast.LENGTH_SHORT).show()
+                }
                 }
 
                 currentRoomRef!!.addValueEventListener(currentRoomListener!!)

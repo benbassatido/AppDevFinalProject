@@ -4,28 +4,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="14dp"
+    android:layout_marginBottom="@dimen/spacing_normal"
     android:background="@drawable/bg_request_card"
-    android:padding="16dp">
+    android:padding="@dimen/padding_normal">
 
     <TextView
         android:id="@+id/tvNickname"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Nickname"
+        android:text="@string/item_friend_default_nickname"
         android:textColor="#FFFFFF"
-        android:textSize="16sp"
+        android:textSize="@dimen/text_size_normal"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@id/actionsContainer"
-        android:layout_marginEnd="12dp"/>
+        android:layout_marginEnd="@dimen/spacing_medium"/>
 
     <TextView
         android:id="@+id/tvUsername"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="username"
+        android:text="@string/item_friend_default_username"
         android:textColor="#B8B8B8"
         android:textSize="13sp"
         app:layout_constraintStart_toStartOf="@id/tvNickname"
@@ -33,7 +33,7 @@
         app:layout_constraintEnd_toStartOf="@id/actionsContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginTop="2dp"
-        android:layout_marginEnd="12dp"/>
+        android:layout_marginEnd="@dimen/spacing_medium"/>
 
     <LinearLayout
         android:id="@+id/actionsContainer"
@@ -49,21 +49,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_btn_outer_glow_accept"
-            android:padding="6dp"
-            android:layout_marginEnd="10dp">
+            android:padding="@dimen/spacing_tiny"
+            android:layout_marginEnd="@dimen/spacing_small">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAccept"
-                android:layout_width="92dp"
+                android:layout_width="@dimen/button_width_medium"
                 android:layout_height="36dp"
-                android:text="Accept"
+                android:text="@string/btn_accept"
                 android:textAllCaps="false"
                 android:textStyle="bold"
                 android:textColor="#FFFFFF"
                 android:background="@drawable/bg_btn_accept"
                 android:backgroundTint="@null"
                 app:backgroundTint="@null"
-                app:cornerRadius="18dp"
+                app:cornerRadius="@dimen/card_corner_radius_medium"
                 android:elevation="0dp"/>
         </FrameLayout>
 
@@ -71,20 +71,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_btn_outer_glow_decline"
-            android:padding="6dp">
+            android:padding="@dimen/spacing_tiny">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDecline"
-                android:layout_width="92dp"
+                android:layout_width="@dimen/button_width_medium"
                 android:layout_height="36dp"
-                android:text="Decline"
+                android:text="@string/btn_decline"
                 android:textAllCaps="false"
                 android:textStyle="bold"
                 android:textColor="#FFFFFF"
                 android:background="@drawable/bg_btn_decline"
                 android:backgroundTint="@null"
                 app:backgroundTint="@null"
-                app:cornerRadius="18dp"
+                app:cornerRadius="@dimen/card_corner_radius_medium"
                 android:elevation="0dp"/>
         </FrameLayout>
 

@@ -13,7 +13,6 @@ navigationFragmentKtx = "2.9.6"
 navigationUiKtx = "2.9.6"
 firebaseBom = "34.7.0"
 googleServices = "4.4.4"
-firebaseUiAuth = "9.0.0"
 playServicesAuth = "21.5.0"
 
 
@@ -35,12 +34,8 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
-firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
-
 firebase-database = { module = "com.google.firebase:firebase-database" }
 firebase-storage = { module = "com.google.firebase:firebase-storage" }
-
-firebase-ui-auth = { module = "com.firebaseui:firebase-ui-auth", version.ref = "firebaseUiAuth" }
 
 
 [plugins]

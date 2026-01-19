@@ -6,14 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    android:padding="20dp">
+    android:padding="@dimen/padding_xlarge">
 
     <ImageButton
         android:id="@+id/btnBack"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
+        android:layout_width="@dimen/icon_size_medium"
+        android:layout_height="@dimen/icon_size_medium"
         android:background="@android:color/transparent"
         android:src="@android:drawable/ic_media_previous"
+        android:contentDescription="@string/cd_back"
         app:tint="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,11 +23,11 @@
         android:id="@+id/tvCreateTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="CREATE ROOM"
+        android:text="@string/create_room_title"
         android:textColor="@color/white"
         android:textStyle="bold"
-        android:textSize="28sp"
-        android:letterSpacing="0.06"
+        android:textSize="@dimen/text_size_xxlarge"
+        android:letterSpacing="@dimen/letter_spacing_small"
         android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,11 +37,11 @@
         android:id="@+id/tvRoomNameLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Room Name"
+        android:text="@string/label_room_name"
         android:textColor="@color/white"
         android:textStyle="bold"
-        android:textSize="18sp"
-        android:layout_marginTop="22dp"
+        android:textSize="@dimen/text_size_medium"
+        android:layout_marginTop="@dimen/spacing_huge"
         app:layout_constraintTop_toBottomOf="@id/tvCreateTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -49,9 +50,9 @@
         android:id="@+id/boxRoomName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/spacing_small"
         android:background="@drawable/bg_purple_outline"
-        android:padding="14dp"
+        android:padding="@dimen/padding_medium"
         app:layout_constraintTop_toBottomOf="@id/tvRoomNameLabel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -61,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:hint="Room Name"
+            android:hint="@string/hint_room_name"
             android:textColor="@color/white"
             android:textColorHint="#BDBDBD"
             android:inputType="textCapSentences" />
@@ -71,11 +72,11 @@
         android:id="@+id/tvDescLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Description"
+        android:text="@string/label_description"
         android:textColor="@color/white"
         android:textStyle="bold"
-        android:textSize="18sp"
-        android:layout_marginTop="16dp"
+        android:textSize="@dimen/text_size_medium"
+        android:layout_marginTop="@dimen/spacing_large"
         app:layout_constraintTop_toBottomOf="@id/boxRoomName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -83,10 +84,10 @@
     <LinearLayout
         android:id="@+id/boxDescription"
         android:layout_width="0dp"
-        android:layout_height="130dp"
-        android:layout_marginTop="10dp"
+        android:layout_height="@dimen/room_info_box_height"
+        android:layout_marginTop="@dimen/spacing_small"
         android:background="@drawable/bg_purple_outline"
-        android:padding="14dp"
+        android:padding="@dimen/padding_medium"
         app:layout_constraintTop_toBottomOf="@id/tvDescLabel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -97,7 +98,7 @@
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
             android:gravity="top"
-            android:hint="Description here"
+            android:hint="@string/hint_description"
             android:textColor="@color/white"
             android:textColorHint="#BDBDBD"
             android:inputType="textMultiLine" />
@@ -106,11 +107,11 @@
     <LinearLayout
         android:id="@+id/boxMic"
         android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="@dimen/button_height_xlarge"
+        android:layout_marginTop="@dimen/spacing_large"
         android:background="@drawable/bg_purple_outline"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:paddingStart="@dimen/padding_normal"
+        android:paddingEnd="@dimen/padding_normal"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         app:layout_constraintTop_toBottomOf="@id/boxDescription"
@@ -118,21 +119,21 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
-            android:layout_width="22dp"
-            android:layout_height="22dp"
+            android:layout_width="@dimen/icon_size_small"
+            android:layout_height="@dimen/icon_size_small"
             android:src="@android:drawable/ic_btn_speak_now"
             app:tint="#C9B3FF"
-            android:contentDescription="Mic" />
+            android:contentDescription="@string/cd_mic" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="@dimen/spacing_medium"
             android:layout_weight="1"
-            android:text="Mic Required"
+            android:text="@string/label_mic_required"
             android:textColor="@color/white"
             android:textStyle="bold"
-            android:textSize="16sp" />
+            android:textSize="@dimen/text_size_normal" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swMicRequired"
@@ -149,8 +150,8 @@
         android:id="@+id/wrapCreate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="18dp"
-        android:padding="12dp"
+        android:layout_marginBottom="@dimen/spacing_xlarge"
+        android:padding="@dimen/padding_small"
         android:background="@drawable/bg_btn_outer_glow_primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -159,13 +160,13 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCreateRoom"
             android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:text="CREATE ROOM"
+            android:layout_height="@dimen/button_height_large"
+            android:text="@string/btn_create_room"
             android:textAllCaps="false"
             android:textStyle="bold"
             android:textColor="@color/white"
             android:includeFontPadding="false"
-            app:cornerRadius="30dp"
+            app:cornerRadius="@dimen/button_corner_radius"
             app:backgroundTint="@null"
             android:background="@drawable/bg_btn_body_primary"
             android:elevation="0dp"/>

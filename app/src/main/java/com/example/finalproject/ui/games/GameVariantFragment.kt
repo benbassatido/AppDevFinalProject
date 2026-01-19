@@ -1,10 +1,8 @@
 package com.example.finalproject.ui.games
 
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,8 +12,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.example.finalproject.R
 import com.example.finalproject.data.repository.GameOptionsRepository
+import com.example.finalproject.ui.common.ViewFactory
 import com.example.finalproject.ui.rooms.RoomsFragment
-import com.google.android.material.button.MaterialButton
 
 class GameVariantFragment : Fragment(R.layout.fragment_game_variant) {
 
@@ -106,40 +104,10 @@ class GameVariantFragment : Fragment(R.layout.fragment_game_variant) {
         flow.referencedIds = ids.toIntArray()
     }
 
-    private fun buildGlowPillButton(text: String, onClick: () -> Unit): FrameLayout {
-        val wrap = FrameLayout(requireContext()).apply {
-            setBackgroundResource(R.drawable.bg_btn_outer_glow_primary)
-            setPadding(dpToPx(10), dpToPx(10), dpToPx(10), dpToPx(10))
-            foregroundGravity = Gravity.CENTER
-        }
-
-        val btn = MaterialButton(requireContext()).apply {
-            this.text = text
-            isAllCaps = true
-            textSize = 14f
-            setTextColor(0xFFFFFFFF.toInt())
-            setOnClickListener { onClick() }
-
-            backgroundTintList = null
-            setBackgroundResource(R.drawable.bg_btn_body_primary)
-
-            minWidth = dpToPx(150)
-            minHeight = dpToPx(56)
-            setPadding(dpToPx(24), dpToPx(16), dpToPx(24), dpToPx(16))
-
-            elevation = 0f
-        }
-
-        val lp = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            dpToPx(56)
+    private fun buildGlowPillButton(text: String, onClick: () -> Unit) =
+        ViewFactory.buildGlowPillButton(
+            context = requireContext(),
+            text = text,
+            onClick = onClick
         )
-        lp.gravity = Gravity.CENTER
-        btn.layoutParams = lp
-
-        wrap.addView(btn)
-        return wrap
-    }
-
-    private fun dpToPx(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
 }
