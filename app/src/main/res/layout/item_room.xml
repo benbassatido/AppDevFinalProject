@@ -1,39 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/spacing_xlarge"
-    android:background="@drawable/bg_room_card_outer_glow"
-    android:padding="2dp">
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="#FFFFFF">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/bg_room_card_inner"
-        android:padding="@dimen/padding_normal">
+        android:padding="20dp">
 
         <TextView
             android:id="@+id/tvRoomTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/item_room_default_title"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_size_large"
-            android:textStyle="bold"
-            android:letterSpacing="0.02" />
+            android:textColor="#2C3E50"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="18sp"
+            android:letterSpacing="0.01" />
 
         <TextView
             android:id="@+id/tvRoomSub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_tiny"
+            android:layout_marginTop="4dp"
             android:text="@string/item_room_default_sub"
-            android:textColor="#BFC7D5"
-            android:textSize="13sp"
-            android:letterSpacing="@dimen/letter_spacing_small" />
+            android:textColor="#9CA3AF"
+            android:fontFamily="sans-serif"
+            android:textSize="12sp"
+            android:letterSpacing="0.05" />
 
         <TextView
             android:id="@+id/tvRoomDesc"
@@ -41,34 +43,27 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/item_room_no_description"
-            android:textColor="#A7B0C0"
+            android:textColor="#C0C0C0"
+            android:fontFamily="sans-serif"
             android:textSize="13sp"
             android:maxLines="2"
             android:ellipsize="end" />
 
-        <FrameLayout
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnJoinRoom"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_normal"
-            android:background="@drawable/bg_btn_outer_glow_primary"
-            android:padding="@dimen/spacing_small">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnJoinRoom"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/txt_height"
-                android:text="@string/btn_view_room"
-                android:textAllCaps="true"
-                android:textStyle="bold"
-                android:letterSpacing="@dimen/letter_spacing_small"
-                android:textColor="@color/white"
-                app:cornerRadius="@dimen/card_corner_radius_large"
-                android:background="@drawable/bg_btn_body_primary"
-                android:backgroundTint="@null"
-                app:backgroundTint="@null"
-                android:elevation="0dp"/>
-        </FrameLayout>
+            android:layout_height="48dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/btn_view_room"
+            android:textAllCaps="true"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="14sp"
+            android:letterSpacing="0.05"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="24dp"
+            app:backgroundTint="#8BA7F5"
+            android:elevation="0dp"/>
 
     </LinearLayout>
 
-</FrameLayout>
+</com.google.android.material.card.MaterialCardView>

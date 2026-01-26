@@ -14,12 +14,14 @@ import com.example.finalproject.data.repository.UsersRepository
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.database.ServerValue
+import com.example.finalproject.data.repository.RepositoryManager
+import com.example.finalproject.ui.common.ErrorHandler
 
 class CompleteProfileFragment : Fragment(R.layout.fragment_complete_profile) {
 
     private val auth = FirebaseProvider.auth
     private val db = FirebaseProvider.databaseRef
-    private val usersRepo = UsersRepository()
+    private val usersRepo = RepositoryManager.usersRepo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

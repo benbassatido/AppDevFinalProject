@@ -11,10 +11,13 @@ import com.example.finalproject.R
 import com.example.finalproject.data.model.User
 import com.example.finalproject.data.repository.FriendRequestsRepository
 import kotlinx.coroutines.launch
+import com.example.finalproject.data.repository.RepositoryManager
+import com.example.finalproject.ui.common.ErrorHandler
+
 
 class FriendRequestsFragment : Fragment(R.layout.fragment_friend_requests) {
 
-    private val friendRequestsRepo = FriendRequestsRepository()
+    private val friendRequestsRepo = RepositoryManager.friendRequestsRepo
 
     private lateinit var rvRequests: RecyclerView
     private lateinit var tvEmpty: TextView

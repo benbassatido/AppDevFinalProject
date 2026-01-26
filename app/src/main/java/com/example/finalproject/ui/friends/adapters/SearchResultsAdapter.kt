@@ -69,8 +69,8 @@ class SearchResultsAdapter(
             btnAdd.isClickable = true
             btnAdd.isFocusable = true
             btnAdd.alpha = 1f
-            btnAdd.background = itemView.context.getDrawable(R.drawable.bg_btn_add)
-            btnAdd.setTextColor(ContextCompat.getColor(itemView.context, R.color.white))
+            btnAdd.setBackgroundColor(0xFFC8D5E0.toInt())
+            btnAdd.setTextColor(0xFF5A6B7C.toInt())
 
             btnAdd.setOnClickListener {
                 btnAdd.text = "Sending..."
@@ -80,8 +80,10 @@ class SearchResultsAdapter(
 
                 onAdd(user) { success ->
                     if (success) {
-
-                        user.requestSent = true
+                        val position = bindingAdapterPosition
+                        if (position != RecyclerView.NO_POSITION) {
+                            items[position] = user.copy(requestSent = true)
+                        }
 
                         btnAdd.text = "Request sent"
                         btnAdd.isClickable = false
@@ -92,8 +94,8 @@ class SearchResultsAdapter(
                         btnAdd.text = "Add friend"
                         btnAdd.isClickable = true
                         btnAdd.isFocusable = true
-                        btnAdd.background = itemView.context.getDrawable(R.drawable.bg_btn_add)
-                        btnAdd.setTextColor(ContextCompat.getColor(itemView.context, R.color.white))
+                        btnAdd.setBackgroundColor(0xFFC8D5E0.toInt())
+                        btnAdd.setTextColor(0xFF5A6B7C.toInt())
                     }
                 }
             }

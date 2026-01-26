@@ -5,62 +5,60 @@
     android:id="@+id/roomsRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background">
+    android:background="@drawable/background"
+    android:padding="24dp">
 
+    <!-- Back Button -->
     <ImageButton
         android:id="@+id/btnBack"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="12dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:background="@android:color/transparent"
         android:src="@android:drawable/ic_media_previous"
-        app:tint="@color/white"
-        android:elevation="10dp"
+        app:tint="#2C3E50"
+        android:contentDescription="Back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- App Name -->
+    <TextView
+        android:id="@+id/tvAppName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SquadApp"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="18sp"
+        android:textColor="#2C3E50"
+        app:layout_constraintTop_toTopOf="@id/btnBack"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Rooms List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvRooms"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="120dp"
+        android:layout_marginTop="24dp"
+        android:paddingBottom="80dp"
         android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/btnBack"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <FrameLayout
-        android:id="@+id/wrapCreateRoom"
-        android:layout_width="96dp"
-        android:layout_height="64dp"
-        android:layout_marginEnd="18dp"
-        android:layout_marginBottom="18dp"
-        android:background="@drawable/bg_room_fab_outer_glow"
-        android:padding="10dp"
-        android:elevation="12dp"
+    <!-- Create Room FAB -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnCreateRoom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="16dp"
+        android:src="@android:drawable/ic_input_add"
+        app:tint="#FFFFFF"
+        app:backgroundTint="#8BA7F5"
+        app:elevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCreateRoom"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="Create Room"
-            android:text=""
-            app:icon="@android:drawable/ic_input_add"
-            app:iconTint="@color/white"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:cornerRadius="30dp"
-            android:background="@drawable/bg_room_fab_body"
-            android:backgroundTint="@null"
-            app:backgroundTint="@null"
-            android:elevation="0dp" />
-    </FrameLayout>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

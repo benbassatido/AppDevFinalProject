@@ -1,45 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/padding_small">
+    android:layout_marginBottom="8dp"
+    app:cardBackgroundColor="#FEFDFB"
+    app:cardCornerRadius="12dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#E8E6E0"
+    app:cardElevation="1dp">
 
-    <TextView
-        android:id="@+id/tvNickname"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/item_friend_default_nickname"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:textSize="@dimen/text_size_normal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btnAddFriend"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0"
-        android:layout_marginEnd="@dimen/spacing_small" />
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tvUsername"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/item_friend_default_username"
-        android:textColor="#888888"
-        android:textSize="13sp"
-        app:layout_constraintStart_toStartOf="@id/tvNickname"
-        app:layout_constraintEnd_toEndOf="@id/tvNickname"
-        app:layout_constraintTop_toBottomOf="@id/tvNickname"
-        android:layout_marginTop="2dp" />
+        <TextView
+            android:id="@+id/tvNickname"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/item_friend_default_nickname"
+            android:textColor="#2C3E50"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnAddFriend"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            android:layout_marginEnd="16dp" />
 
-    <Button
-        android:id="@+id/btnAddFriend"
-        android:layout_width="140dp"
-        android:layout_height="40dp"
-        android:text="Add friend"
-        android:textAllCaps="false"
-        android:visibility="visible"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <TextView
+            android:id="@+id/tvUsername"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/item_friend_default_username"
+            android:textColor="#7F8C8D"
+            android:textSize="13sp"
+            app:layout_constraintStart_toStartOf="@id/tvNickname"
+            app:layout_constraintEnd_toEndOf="@id/tvNickname"
+            app:layout_constraintTop_toBottomOf="@id/tvNickname"
+            android:layout_marginTop="4dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddFriend"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:text="Add Friend"
+            android:textAllCaps="false"
+            android:textColor="#5A6B7C"
+            android:textStyle="bold"
+            android:textSize="13sp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:visibility="visible"
+            app:cornerRadius="22dp"
+            app:backgroundTint="#C8D5E0"
+            app:strokeWidth="0dp"
+            android:stateListAnimator="@null"
+            app:rippleColor="#22000000"
+            app:icon="@drawable/ic_user"
+            app:iconTint="#5A6B7C"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

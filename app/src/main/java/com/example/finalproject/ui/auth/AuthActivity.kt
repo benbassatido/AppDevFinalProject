@@ -10,13 +10,14 @@ import androidx.lifecycle.lifecycleScope
 import com.example.finalproject.MainActivity
 import com.example.finalproject.R
 import com.example.finalproject.data.firebase.FirebaseProvider
-import com.example.finalproject.data.repository.UsersRepository
+import com.example.finalproject.data.repository.AuthHelper
+import com.example.finalproject.data.repository.RepositoryManager
 import com.example.finalproject.ui.login.LoginFragment
 
 class AuthActivity : AppCompatActivity() {
 
     private val auth = FirebaseProvider.auth
-    private val usersRepo = UsersRepository()
+    private val usersRepo = RepositoryManager.usersRepo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

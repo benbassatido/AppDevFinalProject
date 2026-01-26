@@ -1,6 +1,5 @@
 package com.example.finalproject.data.model
 
-
 data class User(
     val userKey: String = "",
     val uid: String = "",

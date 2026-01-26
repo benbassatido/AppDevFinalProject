@@ -1,23 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Widget.App.LoginTextInputLayout"
-        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-        <item name="boxBackgroundColor">@color/login_field_bg</item>
-
-        <item name="boxCornerRadiusTopStart">10dp</item>
-        <item name="boxCornerRadiusTopEnd">10dp</item>
-        <item name="boxCornerRadiusBottomStart">10dp</item>
-        <item name="boxCornerRadiusBottomEnd">10dp</item>
-
-        <item name="boxStrokeColor">@color/login_stroke_selector</item>
-        <item name="boxStrokeWidth">1dp</item>
-        <item name="boxStrokeWidthFocused">2dp</item>
-
-        <item name="hintTextColor">@color/login_hint_selector</item>
-    </style>
-
     <style name="DarkConfirmDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="android:windowMinWidthMajor">90%</item>
         <item name="android:windowMinWidthMinor">90%</item>

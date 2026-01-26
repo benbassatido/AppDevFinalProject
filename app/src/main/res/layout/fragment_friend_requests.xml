@@ -4,71 +4,49 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"
-    android:padding="@dimen/padding_small">
+    android:background="@android:color/transparent">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/gTop"
+    <TextView
+        android:id="@+id/tvPending"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.02"/>
+        android:text="@string/friend_requests_title"
+        android:textColor="#4A5568"
+        android:fontFamily="sans-serif"
+        android:textSize="16sp"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="24dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
-    <FrameLayout
-        android:id="@+id/panelRequests"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvRequests"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/bg_requests_panel"
-        android:padding="@dimen/padding_normal"
-        app:layout_constraintTop_toTopOf="@id/gTop"
+        android:clipToPadding="false"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        app:layout_constraintTop_toBottomOf="@id/tvPending"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/tvPending"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/friend_requests_title"
-                android:textColor="#EDE9FE"
-                android:textStyle="bold"
-                android:textSize="@dimen/text_size_small"
-                android:letterSpacing="@dimen/letter_spacing_small"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvRequests"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:clipToPadding="false"
-                android:paddingTop="@dimen/spacing_normal"
-                android:paddingBottom="@dimen/spacing_normal"
-                app:layout_constraintTop_toBottomOf="@id/tvPending"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <TextView
-                android:id="@+id/tvEmpty"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/friend_requests_no_requests"
-                android:textColor="#C7C7C7"
-                android:textSize="@dimen/text_size_normal"
-                android:gravity="center"
-                android:padding="@dimen/padding_small"
-                android:visibility="gone"
-                app:layout_constraintTop_toTopOf="@id/rvRequests"
-                app:layout_constraintBottom_toBottomOf="@id/rvRequests"
-                app:layout_constraintStart_toStartOf="@id/rvRequests"
-                app:layout_constraintEnd_toEndOf="@id/rvRequests"/>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </FrameLayout>
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/friend_requests_no_requests"
+        android:textColor="#9CA3AF"
+        android:fontFamily="sans-serif"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:padding="16dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/rvRequests"
+        app:layout_constraintBottom_toBottomOf="@id/rvRequests"
+        app:layout_constraintStart_toStartOf="@id/rvRequests"
+        app:layout_constraintEnd_toEndOf="@id/rvRequests"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -40,7 +40,7 @@ class GameVariantFragment : Fragment(R.layout.fragment_game_variant) {
         if (logoRes != 0) ivLogo.setImageResource(logoRes) else ivLogo.setImageResource(R.drawable.logo_fortnite)
 
         tvSelectMode.text = when (gameId) {
-            "arc_riders" -> "SELECT A MAP"
+            "arc_raiders" -> "SELECT A MAP"
             "valorant" -> "SELECT A RANK"
             else -> "SELECT A MODE"
         }

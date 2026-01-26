@@ -7,17 +7,17 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
-import com.example.finalproject.data.model.User
+import com.example.finalproject.data.model.Friend
 import com.google.android.material.card.MaterialCardView
 
 class FriendsAdapter(
-    private val onFriendClick: (User) -> Unit,
-    private val onDeleteClick: (User) -> Unit
+    private val onFriendClick: (Friend) -> Unit,
+    private val onDeleteClick: (Friend) -> Unit
 ) : RecyclerView.Adapter<FriendsAdapter.VH>() {
 
-    private val items = mutableListOf<User>()
+    private val items = mutableListOf<Friend>()
 
-    fun submit(list: List<User>) {
+    fun submit(list: List<Friend>) {
         items.clear()
         items.addAll(list)
         notifyDataSetChanged()
@@ -31,7 +31,7 @@ class FriendsAdapter(
         }
     }
 
-    fun currentList(): List<User> = items.toList()
+    fun currentList(): List<Friend> = items.toList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.item_friend, parent, false)
@@ -46,8 +46,8 @@ class FriendsAdapter(
 
     class VH(
         itemView: View,
-        private val onFriendClick: (User) -> Unit,
-        private val onDeleteClick: (User) -> Unit
+        private val onFriendClick: (Friend) -> Unit,
+        private val onDeleteClick: (Friend) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
 
         private val card = itemView.findViewById<MaterialCardView>(R.id.cardFriend)
@@ -55,7 +55,7 @@ class FriendsAdapter(
         private val tvUsername = itemView.findViewById<TextView>(R.id.tvUsername)
         private val btnDelete = itemView.findViewById<ImageButton>(R.id.btnDeleteFriend)
 
-        fun bind(f: User) {
+        fun bind(f: Friend) {
             tvNickname.text = f.nickname
             tvUsername.text = f.username
 

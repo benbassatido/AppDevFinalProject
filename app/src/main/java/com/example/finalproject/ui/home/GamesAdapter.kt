@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
 import com.example.finalproject.data.model.Game
@@ -15,6 +16,7 @@ class GamesAdapter(
 
     inner class VH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val btnGame: ImageButton = itemView.findViewById(R.id.btnGame)
+        val tvGameName: TextView = itemView.findViewById(R.id.tvGameName)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -26,6 +28,7 @@ class GamesAdapter(
     override fun onBindViewHolder(holder: VH, position: Int) {
         val game = games[position]
         holder.btnGame.setImageResource(game.logoRes)
+        holder.tvGameName.text = game.name
         holder.btnGame.setOnClickListener { onGameClick(game) }
     }
 

@@ -15,13 +15,15 @@ import com.example.finalproject.ui.rooms.RoomFragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputEditText
+import com.example.finalproject.data.repository.RepositoryManager
+import com.example.finalproject.ui.common.ErrorHandler
 
 class CreateRoomFragment : Fragment(R.layout.fragment_create_room) {
 
     private val auth = FirebaseProvider.auth
     private val database = FirebaseProvider.database
-    private val roomsRepo = RoomsRepository()
-    private val usersRepo = UsersRepository()
+    private val roomsRepo = RepositoryManager.roomsRepo
+    private val usersRepo = RepositoryManager.usersRepo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

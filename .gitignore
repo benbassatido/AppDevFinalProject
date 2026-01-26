@@ -13,3 +13,17 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# IDE - Ignore ALL .idea files (safer)
+.idea/
+
+# Kotlin build artifacts
+.kotlin/
+*.log
+
+# Firebase - NEVER commit this file (contains API keys)
+google-services.json
+
+# Backup files
+*.bak
+*~

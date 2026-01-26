@@ -18,12 +18,14 @@ import com.example.finalproject.data.repository.UsersRepository
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.launch
+import com.example.finalproject.data.repository.RepositoryManager
+import com.example.finalproject.ui.common.ErrorHandler
 
 class ChatFragment : Fragment(R.layout.fragment_chat) {
 
     private val auth = FirebaseProvider.auth
-    private val usersRepo = UsersRepository()
-    private val chatRepo = ChatRepository(usersRepo = usersRepo)
+    private val usersRepo = RepositoryManager.usersRepo
+    private val chatRepo = RepositoryManager.chatRepo
 
     private val myUid: String by lazy {
         auth.currentUser?.uid ?: throw IllegalStateException("Not logged in")
@@ -93,7 +95,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                 if (list.isNotEmpty()) rvMessages.scrollToPosition(list.size - 1)
             },
             onError = { error: DatabaseError ->
-                Toast.makeText(requireContext(), "Failed to load messages: ${error.message}", Toast.LENGTH_SHORT).show()
+                ErrorHandler.showError(requireContext(), error.message, "Failed to load messages")
             }
         )
     }

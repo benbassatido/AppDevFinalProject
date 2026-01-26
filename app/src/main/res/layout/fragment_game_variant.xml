@@ -6,51 +6,63 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    android:padding="@dimen/padding_large">
+    android:padding="24dp">
 
+    <!-- Back Button -->
     <ImageButton
         android:id="@+id/btnBack"
-        android:layout_width="@dimen/icon_size_medium"
-        android:layout_height="@dimen/icon_size_medium"
-        android:layout_margin="@dimen/spacing_large"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:background="@android:color/transparent"
         android:src="@android:drawable/ic_media_previous"
-        app:tint="@color/white"
+        app:tint="#2C3E50"
+        android:contentDescription="Back"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
+    <!-- App Name -->
+    <TextView
+        android:id="@+id/tvAppName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/friends_app_name"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="18sp"
+        android:textColor="#2C3E50"
+        app:layout_constraintTop_toTopOf="@id/btnBack"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Game Image Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardGame"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/top_margin_huge"
-        app:cardCornerRadius="@dimen/card_corner_radius_large"
-        app:cardElevation="0dp"
-        app:strokeWidth="@dimen/card_stroke_width_thin"
-        app:strokeColor="@color/neon_purple"
-        app:cardBackgroundColor="#0F1116"
-        android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="24dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="4dp"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:layout_constraintTop_toBottomOf="@id/btnBack"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_percent="0.92"
-        app:layout_constraintDimensionRatio="1:1.15">
+        app:layout_constraintHeight_percent="0.35">
 
         <ImageView
             android:id="@+id/ivGameLogo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:contentDescription="@string/app_name"/>
+            android:contentDescription="Game logo"/>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Options Buttons Container -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/optionsHost"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
+        android:layout_marginTop="48dp"
         app:layout_constraintTop_toBottomOf="@id/cardGame"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -60,33 +72,29 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:flow_wrapMode="chain"
-            app:flow_horizontalGap="@dimen/spacing_normal"
-            app:flow_verticalGap="@dimen/spacing_normal"
+            app:flow_maxElementsWrap="3"
+            app:flow_horizontalGap="12dp"
+            app:flow_verticalGap="12dp"
             app:flow_horizontalStyle="packed"
-            app:flow_firstHorizontalStyle="packed"
-            app:flow_lastHorizontalStyle="packed"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Select Mode Text -->
     <TextView
         android:id="@+id/tvSelectMode"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/game_select_map"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_size_medium"
-        android:textStyle="bold"
-        android:letterSpacing="0.06"
-        android:alpha="0.9"
+        android:text="SELECT A MODE"
+        android:textColor="#4A5568"
+        android:fontFamily="sans-serif"
+        android:textSize="14sp"
+        android:letterSpacing="0.05"
         android:gravity="center"
-        android:layout_marginTop="@dimen/spacing_large"
-        android:layout_marginBottom="@dimen/spacing_xlarge"
+        android:layout_marginTop="32dp"
         app:layout_constraintTop_toBottomOf="@id/optionsHost"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

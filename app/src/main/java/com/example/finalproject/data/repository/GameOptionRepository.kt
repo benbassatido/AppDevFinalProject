@@ -1,4 +1,3 @@
-// GameOptionRepository.kt
 package com.example.finalproject.data.repository
 
 import com.example.finalproject.data.model.GameOption
@@ -14,7 +13,7 @@ object GameOptionsRepository {
             GameOption("faceit", "FACEIT"),
             GameOption("premier", "PREMIER")
         ),
-        "arc_riders" to listOf(
+        "arc_raiders" to listOf(
             GameOption("dam_battlegrounds", "DAM BATTLEGROUNDS"),
             GameOption("buried_city", "BURIED CITY"),
             GameOption("spaceport", "THE SPACEPORT"),
@@ -68,7 +67,7 @@ object GameOptionsRepository {
                 GameOption("pr_30000_plus", "30,000+")
             )
         ),
-        "arc_riders" to mapOf(
+        "arc_raiders" to mapOf(
             "dam_battlegrounds" to listOf(GameOption("duo", "DUO"), GameOption("trio", "TRIO")),
             "buried_city" to listOf(GameOption("duo", "DUO"), GameOption("trio", "TRIO")),
             "spaceport" to listOf(GameOption("duo", "DUO"), GameOption("trio", "TRIO")),
@@ -110,13 +109,38 @@ object GameOptionsRepository {
         return optionsByGameAndVariant[gameId]?.get(variantId).orEmpty()
     }
 
-
     fun maxPlayersForPartyType(partyType: String): Int {
         val t = partyType.lowercase()
         return when {
             t.contains("duo") -> 2
             t.contains("trio") -> 3
             t.contains("quad") || t.contains("squad") -> 4
+            else -> 0
+        }
+    }
+
+    fun getMaxPlayersForGame(gameId: String, variantId: String, partyType: String): Int {
+        return when (gameId) {
+            "cs2" -> 5
+            "cod_bo7" -> 6
+            "battlefield_6" -> {
+                if (variantId == "mp") {
+                    getMaxPlayersForBattlefieldMode(partyType)
+                } else {
+                    maxPlayersForPartyType(partyType)
+                }
+            }
+            else -> maxPlayersForPartyType(partyType)
+        }
+    }
+
+    private fun getMaxPlayersForBattlefieldMode(partyType: String): Int {
+        val mode = partyType.lowercase()
+        return when {
+            mode.contains("conquest") -> 32
+            mode.contains("breakthrough") -> 24
+            mode.contains("rush") -> 12
+            mode.contains("domination") -> 8
             else -> 0
         }
     }

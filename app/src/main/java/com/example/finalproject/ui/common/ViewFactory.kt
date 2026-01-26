@@ -1,11 +1,9 @@
 package com.example.finalproject.ui.common
 
 import android.content.Context
-import android.view.Gravity
-import android.widget.FrameLayout
+import android.widget.Button
 import androidx.core.content.ContextCompat
 import com.example.finalproject.R
-import com.google.android.material.button.MaterialButton
 
 
 object ViewFactory {
@@ -13,32 +11,26 @@ object ViewFactory {
     fun buildGlowPillButton(
         context: Context,
         text: String,
-        textSize: Float = 14f,
+        textSize: Float = 15f,
         isAllCaps: Boolean = true,
-        minWidth: Int = 150,
-        minHeight: Int = 56,
-        horizontalPadding: Int = 24,
-        verticalPadding: Int = 16,
+        minWidth: Int = 110,
+        minHeight: Int = 50,
+        horizontalPadding: Int = 28,
+        verticalPadding: Int = 12,
         onClick: () -> Unit
-    ): FrameLayout {
+    ): Button {
         val density = context.resources.displayMetrics.density
         fun dpToPx(dp: Int): Int = (dp * density).toInt()
         
-        val wrap = FrameLayout(context).apply {
-            setBackgroundResource(R.drawable.bg_btn_outer_glow_primary)
-            setPadding(dpToPx(10), dpToPx(10), dpToPx(10), dpToPx(10))
-            foregroundGravity = Gravity.CENTER
-        }
-
-        val btn = MaterialButton(context).apply {
+        return Button(context).apply {
             this.text = text
             this.isAllCaps = isAllCaps
             this.textSize = textSize
-            setTextColor(ContextCompat.getColor(context, R.color.white))
+            setTextColor(0xFFFFFFFF.toInt())
+            typeface = android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL)
             setOnClickListener { onClick() }
 
-            backgroundTintList = null
-            setBackgroundResource(R.drawable.bg_btn_body_primary)
+            setBackgroundResource(R.drawable.bg_game_option_button)
 
             this.minWidth = dpToPx(minWidth)
             this.minHeight = dpToPx(minHeight)
@@ -48,18 +40,6 @@ object ViewFactory {
                 dpToPx(horizontalPadding),
                 dpToPx(verticalPadding)
             )
-
-            elevation = 0f
         }
-
-        val lp = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            dpToPx(minHeight)
-        )
-        lp.gravity = Gravity.CENTER
-        btn.layoutParams = lp
-
-        wrap.addView(btn)
-        return wrap
     }
 }

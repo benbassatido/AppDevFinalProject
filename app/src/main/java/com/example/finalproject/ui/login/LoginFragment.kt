@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.finalproject.MainActivity
 import com.example.finalproject.R
-import com.example.finalproject.ui.auth.AuthHelper
+import com.example.finalproject.data.repository.AuthHelper
 import com.example.finalproject.ui.auth.CompleteProfileFragment
 import com.example.finalproject.ui.auth.RegisterFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -24,13 +24,15 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.example.finalproject.data.repository.RepositoryManager
+import com.example.finalproject.ui.common.ErrorHandler
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
-    private lateinit var auth: FirebaseAuth
+    private val auth = FirebaseProvider.auth
     private lateinit var googleClient: GoogleSignInClient
 
-    private val usersRepo = UsersRepository()
+    private val usersRepo = RepositoryManager.usersRepo
 
     private val googleLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
@@ -44,7 +46,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 val idToken = account.idToken
 
                 if (idToken.isNullOrEmpty()) {
-                    Toast.makeText(requireContext(), "Google sign-in failed (no token)", Toast.LENGTH_LONG).show()
+                    ErrorHandler.showError(requireContext(), null, "Google sign-in failed (no token)")
                     return@registerForActivityResult
                 }
 
@@ -54,18 +56,16 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                         routeAfterLogin()
                     }
                     .addOnFailureListener { e ->
-                        Toast.makeText(requireContext(), e.message ?: "Google login failed", Toast.LENGTH_LONG).show()
+                        ErrorHandler.showError(requireContext(), e.message, "Google login failed")
                     }
 
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), e.message ?: "Google sign-in failed", Toast.LENGTH_LONG).show()
+                ErrorHandler.showError(requireContext(), e.message, "Google sign-in failed")
             }
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        auth = FirebaseProvider.auth
 
         val ivAppLogo = view.findViewById<ImageView>(R.id.ivAppLogo)
         val etEmail = view.findViewById<TextInputEditText>(R.id.etEmail)
@@ -108,11 +108,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 }
                 .addOnFailureListener { e ->
                     setLoading(ivAppLogo, btnLogin, btnGoogle, etEmail, etPassword, false)
-                    Toast.makeText(
+                    ErrorHandler.showError(
                         requireContext(),
-                        friendlyAuthError(e.message),
-                        Toast.LENGTH_LONG
-                    ).show()
+                        friendlyAuthError(e.message)
+                    )
                 }
         }
 

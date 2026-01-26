@@ -1,17 +1,17 @@
 package com.example.finalproject.data.repository
 
 import com.example.finalproject.data.firebase.FirebaseProvider
+import com.example.finalproject.data.firebase.FirebasePaths
 import com.example.finalproject.data.model.User
 import com.google.firebase.database.*
 import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.resumeWithException
 
-
 class UsersRepository {
 
     private val root = FirebaseProvider.databaseRef
-    private val usersRef = root.child("users")
-    private val uidToUserRef = root.child("uid_to_user")
+    private val usersRef = root.child(FirebasePaths.USERS)
+    private val uidToUserRef = root.child(FirebasePaths.UID_TO_USER)
 
 
     private fun findNextUserNumber(usersSnapshot: DataSnapshot): Int {
@@ -127,7 +127,7 @@ class UsersRepository {
 
     suspend fun getUserNickname(userKey: String): String? {
         return try {
-            usersRef.child(userKey).child("nickname")
+            usersRef.child(userKey).child(FirebasePaths.NICKNAME)
                 .get().await()
                 .getValue(String::class.java)
         } catch (e: Exception) {
@@ -138,8 +138,8 @@ class UsersRepository {
     suspend fun checkProfileComplete(userKey: String): Boolean {
         return try {
             val snap = usersRef.child(userKey).get().await()
-            val username = snap.child("username").getValue(String::class.java).orEmpty()
-            val nickname = snap.child("nickname").getValue(String::class.java).orEmpty()
+            val username = snap.child(FirebasePaths.USERNAME).getValue(String::class.java).orEmpty()
+            val nickname = snap.child(FirebasePaths.NICKNAME).getValue(String::class.java).orEmpty()
             username.isNotBlank() && nickname.isNotBlank()
         } catch (e: Exception) {
             false
@@ -153,6 +153,15 @@ class UsersRepository {
                 onSuccess = { cont.resume(it, null) },
                 onError = { cont.resumeWithException(IllegalStateException(it)) }
             )
+        }
+    }
+
+    suspend fun getUserByKey(userKey: String): User? {
+        return try {
+            val snap = usersRef.child(userKey).get().await()
+            snap.getValue(User::class.java)
+        } catch (e: Exception) {
+            null
         }
     }
 

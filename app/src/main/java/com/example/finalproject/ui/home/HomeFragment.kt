@@ -5,26 +5,27 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.finalproject.MainActivity
 import com.example.finalproject.R
 import kotlinx.coroutines.launch
 import com.example.finalproject.data.firebase.FirebaseProvider
 import com.example.finalproject.data.repository.GamesRepository
-import com.example.finalproject.data.repository.UsersRepository
 import com.example.finalproject.ui.auth.AuthActivity
 import com.example.finalproject.ui.friends.FriendsFragment
 import com.example.finalproject.ui.games.GameDetailsFragment
 import com.example.finalproject.ui.games.GameVariantFragment
-import com.example.finalproject.ui.rooms.RoomsFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.finalproject.data.repository.RepositoryManager
+import com.example.finalproject.ui.common.ErrorHandler
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
@@ -32,7 +33,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var allGames: List<com.example.finalproject.data.model.Game>
 
     private val auth = FirebaseProvider.auth
-    private val usersRepo = UsersRepository()
+    private val usersRepo = RepositoryManager.usersRepo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,8 +42,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val rv = view.findViewById<RecyclerView>(R.id.rvGames)
         val etSearch = view.findViewById<EditText>(R.id.etSearch)
 
-        val btnViewFriends = view.findViewById<MaterialButton>(R.id.btnViewFriends)
-        val btnLogout = view.findViewById<MaterialButton>(R.id.btnLogout)
+        val btnViewFriends = view.findViewById<MaterialCardView>(R.id.btnViewFriends)
+        val btnLogout = view.findViewById<MaterialCardView>(R.id.btnLogout)
 
         val currentUser = auth.currentUser
         if (currentUser == null) {
@@ -53,19 +54,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         val uid = currentUser.uid
 
-        tvHello.text = "Hello Player"
+        tvHello.text = "Hello Player 👋"
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val userKey = usersRepo.ensureUserKeySuspend(uid)
                 val nickname = usersRepo.getUserNickname(userKey)
-                tvHello.text = if (!nickname.isNullOrBlank()) "Hello $nickname" else "Hello Player"
+                tvHello.text = if (!nickname.isNullOrBlank()) "Hello, $nickname 👋" else "Hello Player 👋"
             } catch (e: Exception) {
-                tvHello.text = "Hello Player"
-                Toast.makeText(requireContext(), "Failed to load profile", Toast.LENGTH_SHORT).show()
+                tvHello.text = "Hello Player 👋"
+                ErrorHandler.showError(requireContext(), e.message, "Failed to load profile")
             }
         }
 
-        rv.layoutManager = GridLayoutManager(requireContext(), 3)
+        rv.layoutManager = GridLayoutManager(requireContext(), 2)
 
         allGames = GamesRepository.getAllGames()
 
@@ -87,7 +88,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         .addToBackStack(null)
                         .commit()
                 }
-                "fortnite", "cs2", "arc_riders", "battlefield_6", "cod_bo7" -> {
+                "fortnite", "cs2", "arc_raiders", "battlefield_6", "cod_bo7" -> {
                     val f = GameVariantFragment().apply {
                         arguments = bundleOf(
                             "gameId" to game.id,
@@ -121,10 +122,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         rv.adapter = adapter
 
         btnViewFriends.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, FriendsFragment())
-                .addToBackStack(null)
-                .commit()
+            // Update bottom navigation to Friends tab
+            (requireActivity() as? MainActivity)?.findViewById<BottomNavigationView>(R.id.bottomNavigation)?.selectedItemId = R.id.navigation_friends
         }
 
         btnLogout.setOnClickListener {

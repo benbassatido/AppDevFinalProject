@@ -17,15 +17,6 @@ import com.example.finalproject.ui.rooms.RoomsFragment
 
 class GameDetailsFragment : Fragment(R.layout.fragment_game_details) {
 
-    companion object {
-        private const val CS2_TEAM_SIZE = 5
-        private const val COD_TEAM_SIZE = 6
-        private const val CONQUEST_PLAYERS = 32
-        private const val BREAKTHROUGH_PLAYERS = 24
-        private const val RUSH_PLAYERS = 12
-        private const val DOMINATION_PLAYERS = 8
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -43,7 +34,7 @@ class GameDetailsFragment : Fragment(R.layout.fragment_game_details) {
 
         tvSelectMode.text = when (gameId) {
             "cs2" -> "SELECT RANK TO FIND ROOMS"
-            "arc_riders" -> "SELECT A TEAM SIZE"
+            "arc_raiders" -> "SELECT A TEAM SIZE"
             "battlefield_6" -> if (variantId == "mp") "SELECT MODE TO FIND ROOMS" else "SELECT TEAM SIZE"
             "cod_bo7" -> if (variantId == "mp") "SELECT MODE TO FIND ROOMS" else "SELECT TEAM SIZE"
             else -> "SELECT SIZE SQUAD TO FIND ROOMS"
@@ -62,7 +53,7 @@ class GameDetailsFragment : Fragment(R.layout.fragment_game_details) {
         options.forEach { option ->
             val pill = buildGlowPillButton(option.title) {
                 val partyType = option.title
-                val maxPlayers = maxPlayersFor(gameId, variantId, partyType)
+                val maxPlayers = GameOptionsRepository.getMaxPlayersForGame(gameId, variantId, partyType)
 
                 val next = RoomsFragment().apply {
                     arguments = bundleOf(
@@ -93,28 +84,6 @@ class GameDetailsFragment : Fragment(R.layout.fragment_game_details) {
         }
 
         flow.referencedIds = ids.toIntArray()
-    }
-
-    private fun maxPlayersFor(gameId: String, variantId: String, partyType: String): Int {
-        if (gameId == "cs2") return CS2_TEAM_SIZE
-        if (gameId == "cod_bo7") return COD_TEAM_SIZE
-
-        if (gameId == "battlefield_6") {
-            val t = partyType.lowercase()
-            return if (variantId == "mp") {
-                when {
-                    t.contains("conquest") -> CONQUEST_PLAYERS
-                    t.contains("breakthrough") -> BREAKTHROUGH_PLAYERS
-                    t.contains("rush") -> RUSH_PLAYERS
-                    t.contains("domination") -> DOMINATION_PLAYERS
-                    else -> 0
-                }
-            } else {
-                GameOptionsRepository.maxPlayersForPartyType(partyType)
-            }
-        }
-
-        return GameOptionsRepository.maxPlayersForPartyType(partyType)
     }
 
     private fun buildGlowPillButton(text: String, onClick: () -> Unit) =

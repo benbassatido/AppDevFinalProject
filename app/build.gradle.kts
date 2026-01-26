@@ -6,9 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.finalproject"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.finalproject"
@@ -37,6 +35,27 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/license.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/notice.txt",
+                "META-INF/ASL2.0"
+            )
+        }
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("androidx.annotation:annotation-experimental:1.4.1")
+    }
 }
 
 dependencies {
@@ -55,13 +74,6 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(platform(libs.firebase.bom))
-
-    implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
-
     implementation(libs.firebase.database)
-
-    implementation(libs.firebase.storage)
-
-
 }

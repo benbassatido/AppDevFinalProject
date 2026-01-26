@@ -12,16 +12,17 @@ import com.example.finalproject.R
 import com.example.finalproject.data.firebase.FirebaseProvider
 import com.example.finalproject.data.model.Room
 import com.example.finalproject.data.repository.GameOptionsRepository
-import com.example.finalproject.data.repository.UsersRepository
 import com.example.finalproject.ui.rooms.create.CreateRoomFragment
-import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.*
+import com.example.finalproject.data.repository.RepositoryManager
+import com.example.finalproject.ui.common.ErrorHandler
 
 class RoomsFragment : Fragment(R.layout.fragment_rooms) {
 
     private val auth = FirebaseProvider.auth
     private val database = FirebaseProvider.database
-    private val usersRepo = UsersRepository()
+    private val usersRepo = RepositoryManager.usersRepo
 
     private lateinit var adapter: RoomsAdapter
     private lateinit var btnBack: ImageButton
@@ -52,7 +53,7 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
         maxPlayers = arguments?.getInt("maxPlayers", 0) ?: 0
 
         val rv = view.findViewById<RecyclerView>(R.id.rvRooms)
-        val fab = view.findViewById<MaterialButton>(R.id.btnCreateRoom)
+        val fab = view.findViewById<FloatingActionButton>(R.id.btnCreateRoom)
         btnBack = view.findViewById(R.id.btnBack)
 
         adapter = RoomsAdapter { room ->
@@ -123,7 +124,7 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
+                ErrorHandler.showError(requireContext(), error.message, "Failed to load rooms")
             }
         }
 
@@ -154,7 +155,7 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
             }
 
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(context, "Failed to load current room", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Failed to load member counts", Toast.LENGTH_SHORT).show()
                     }
         }
 
@@ -177,8 +178,8 @@ class RoomsFragment : Fragment(R.layout.fragment_rooms) {
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(context, "Failed to load member counts", Toast.LENGTH_SHORT).show()
-                }
+                        Toast.makeText(context, "Failed to load current room status", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
                 currentRoomRef!!.addValueEventListener(currentRoomListener!!)

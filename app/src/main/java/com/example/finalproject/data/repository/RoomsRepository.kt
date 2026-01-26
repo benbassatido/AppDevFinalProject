@@ -1,6 +1,7 @@
 package com.example.finalproject.data.repository
 
 import com.example.finalproject.data.firebase.FirebaseProvider
+import com.example.finalproject.data.firebase.FirebasePaths
 import com.example.finalproject.data.model.Room
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -10,14 +11,14 @@ class RoomsRepository {
     private val db = FirebaseProvider.database
     private val rootRef = FirebaseProvider.databaseRef
 
-    private val roomsRef = rootRef.child("rooms")
-    private val membersRef = rootRef.child("room_members")
-    private val userCurrentRoomRef = rootRef.child("user_current_room")
+    private val roomsRef = rootRef.child(FirebasePaths.ROOMS)
+    private val membersRef = rootRef.child(FirebasePaths.ROOM_MEMBERS)
+    private val userCurrentRoomRef = rootRef.child(FirebasePaths.USER_CURRENT_ROOM)
 
     private val auth = FirebaseProvider.auth
     private fun uid(): String = auth.currentUser?.uid.orEmpty()
 
-    private val usersRepo = UsersRepository()
+    private val usersRepo = RepositoryManager.usersRepo
 
     private fun makeRoomKey(gameId: String, variant: String, partyType: String, title: String): String {
         fun clean(s: String): String {

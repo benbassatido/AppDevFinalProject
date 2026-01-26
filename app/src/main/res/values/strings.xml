@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">finalProject</string>
-    <string name="login_welcome">WELCOME,</string>
+    <string name="login_welcome">WELCOME</string>
     <string name="login_squad">SQUAD</string>
     <string name="hint_email">EMAIL</string>
     <string name="hint_password">PASSWORD</string>

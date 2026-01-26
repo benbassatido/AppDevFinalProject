@@ -1,6 +1,5 @@
 package com.example.finalproject.data.model
 
-
 data class Room(
     val id: String = "",
     val title: String = "",

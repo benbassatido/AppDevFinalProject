@@ -1,23 +1,18 @@
 package com.example.finalproject.ui.friends
 
-import android.graphics.LinearGradient
-import android.graphics.Shader
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Button
-import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
-import com.example.finalproject.data.repository.FriendsRepository
-import com.example.finalproject.data.repository.FriendsSearchRepository
 import com.example.finalproject.ui.chat.ChatFragment
 import com.example.finalproject.ui.friends.adapters.FriendsAdapter
 import com.example.finalproject.ui.friends.adapters.SearchResultsAdapter
@@ -28,11 +23,14 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.example.finalproject.data.repository.RepositoryManager
+import com.example.finalproject.ui.common.ErrorHandler
+
 
 class FriendsFragment : Fragment(R.layout.fragment_friends) {
 
-    private val friendsRepo = FriendsRepository()
-    private val searchRepo = FriendsSearchRepository()
+    private val friendsRepo = RepositoryManager.friendsRepo
+    private val searchRepo = RepositoryManager.friendsSearchRepo
 
     // Search views
     private lateinit var tilSearchFriends: TextInputLayout
@@ -44,9 +42,12 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
     private var isSearchOpen = false
 
     // Top / tabs
-    private lateinit var btnBack: ImageButton
-    private lateinit var btnTabFriends: Button
-    private lateinit var btnTabRequests: Button
+    private lateinit var tabFriends: LinearLayout
+    private lateinit var tabRequests: LinearLayout
+    private lateinit var btnTabFriends: TextView
+    private lateinit var btnTabRequests: TextView
+    private lateinit var underlineFriends: View
+    private lateinit var underlineRequests: View
     private lateinit var tvSection: TextView
     private lateinit var tvTitle: TextView
 
@@ -63,9 +64,12 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
         super.onViewCreated(view, savedInstanceState)
 
         // Find views
-        btnBack = view.findViewById(R.id.btnBack)
+        tabFriends = view.findViewById(R.id.tabFriends)
+        tabRequests = view.findViewById(R.id.tabRequests)
         btnTabFriends = view.findViewById(R.id.btnTabFriends)
         btnTabRequests = view.findViewById(R.id.btnTabRequests)
+        underlineFriends = view.findViewById(R.id.underlineFriends)
+        underlineRequests = view.findViewById(R.id.underlineRequests)
         tvSection = view.findViewById(R.id.tvSection)
         tvTitle = view.findViewById(R.id.tvTitle)
 
@@ -79,36 +83,23 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
         rvSearchResults = view.findViewById(R.id.rvSearchResults)
         tvNoResults = view.findViewById(R.id.tvNoResults)
 
-        // Title gradient
-        tvTitle.post {
-            val paint = tvTitle.paint
-            val width = paint.measureText(tvTitle.text.toString())
-            paint.shader = LinearGradient(
-                0f, 0f, width, tvTitle.textSize,
-                intArrayOf(
-                    ContextCompat.getColor(requireContext(), R.color.cyan_bright),
-                    ContextCompat.getColor(requireContext(), R.color.purple_dark)
-                ),
-                null,
-                Shader.TileMode.CLAMP
-            )
-            tvTitle.invalidate()
-        }
-
-        btnBack.setOnClickListener { parentFragmentManager.popBackStack() }
-
         // Tabs
-        btnTabFriends.setOnClickListener {
+        tabFriends.setOnClickListener {
             closeSearchIfOpen()
             showFriendsTab()
         }
-        btnTabRequests.setOnClickListener {
+        tabRequests.setOnClickListener {
             closeSearchIfOpen()
             showRequestsTab()
         }
 
         childFragmentManager.setFragmentResultListener("friends_refresh", viewLifecycleOwner) { _, _ ->
             loadFriends()
+            // Also refresh search results if search is open
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(300)
+                refreshSearchResults()
+            }
         }
 
         // Friends adapter
@@ -154,6 +145,14 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
                         return@launch
                     }
                     searchRepo.sendFriendRequest(user.user.userKey)
+                    
+                    // Reload friends list to check if friendship was established (auto-accept case)
+                    loadFriends()
+                    
+                    // Wait a bit for the load to complete and then refresh search results
+                    delay(500)
+                    refreshSearchResults()
+                    
                     done(true)
                 } catch (_: Exception) {
                     done(false)
@@ -190,9 +189,10 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
                         val outgoingSet = searchRepo.getMyOutgoingRequestsSet()
 
                         val fixed = results.map { u ->
-                            u.isFriend = friendsUids.contains(u.user.userKey)
-                            u.requestSent = outgoingSet.contains(u.user.userKey)
-                            u
+                            u.copy(
+                                isFriend = friendsUids.contains(u.user.userKey),
+                                requestSent = outgoingSet.contains(u.user.userKey)
+                            )
                         }
 
                         rvSearchResults.visibility = View.VISIBLE
@@ -222,11 +222,13 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
         rvFriends.visibility = View.VISIBLE
         requestsContainer.visibility = View.GONE
 
-        btnTabFriends.setBackgroundResource(R.drawable.bg_tab_selected)
-        btnTabFriends.setTextColor(ContextCompat.getColor(requireContext(), R.color.cyan_bright))
+        // Active tab: blue text and underline
+        btnTabFriends.setTextColor(0xFF8BA7F5.toInt())
+        underlineFriends.setBackgroundColor(0xFF8BA7F5.toInt())
 
-        btnTabRequests.setBackgroundResource(R.drawable.bg_tab_unselected)
-        btnTabRequests.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        // Inactive tab: gray text and no underline
+        btnTabRequests.setTextColor(0xFFC0C0C0.toInt())
+        underlineRequests.setBackgroundColor(android.graphics.Color.TRANSPARENT)
 
         loadFriends()
     }
@@ -236,11 +238,13 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
         tvEmptyFriends.visibility = View.GONE
         requestsContainer.visibility = View.VISIBLE
 
-        btnTabRequests.setBackgroundResource(R.drawable.bg_tab_selected)
-        btnTabRequests.setTextColor(ContextCompat.getColor(requireContext(), R.color.cyan_bright))
+        // Active tab: blue text and underline
+        btnTabRequests.setTextColor(0xFF8BA7F5.toInt())
+        underlineRequests.setBackgroundColor(0xFF8BA7F5.toInt())
 
-        btnTabFriends.setBackgroundResource(R.drawable.bg_tab_unselected)
-        btnTabFriends.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+        // Inactive tab: gray text and no underline
+        btnTabFriends.setTextColor(0xFFC0C0C0.toInt())
+        underlineFriends.setBackgroundColor(android.graphics.Color.TRANSPARENT)
 
         val existing = childFragmentManager.findFragmentById(R.id.requestsContainer)
         if (existing !is FriendRequestsFragment) {
@@ -297,7 +301,29 @@ class FriendsFragment : Fragment(R.layout.fragment_friends) {
 
                 tvEmptyFriends.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Failed to load friends", Toast.LENGTH_SHORT).show()
+                ErrorHandler.showError(requireContext(), e.message, "Failed to load friends")
+            }
+        }
+    }
+
+    private fun refreshSearchResults() {
+        val currentQuery = etSearchFriends.text?.toString().orEmpty()
+        if (!isSearchOpen || currentQuery.trim().length < 2) return
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val results = searchRepo.searchByNicknamePrefix(currentQuery)
+                val outgoingSet = searchRepo.getMyOutgoingRequestsSet()
+
+                val fixed = results.map { u ->
+                    u.copy(
+                        isFriend = friendsUids.contains(u.user.userKey),
+                        requestSent = outgoingSet.contains(u.user.userKey)
+                    )
+                }
+
+                searchAdapter.submit(fixed)
+            } catch (_: Exception) {
             }
         }
     }

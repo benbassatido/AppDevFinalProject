@@ -1,6 +1,7 @@
 package com.example.finalproject.data.repository
 
 import com.example.finalproject.data.firebase.FirebaseProvider
+import com.example.finalproject.data.firebase.FirebasePaths
 import com.example.finalproject.data.model.ChatMessage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -9,7 +10,7 @@ import kotlinx.coroutines.tasks.await
 class ChatRepository(
     private val db: FirebaseDatabase = FirebaseProvider.database,
     auth: FirebaseAuth = FirebaseProvider.auth,
-    usersRepo: UsersRepository = UsersRepository()
+    usersRepo: UsersRepository = RepositoryManager.usersRepo
 ) : BaseRepository(auth, usersRepo) {
 
     fun chatIdFor(aUserKey: String, bUserKey: String): String =
@@ -17,21 +18,21 @@ class ChatRepository(
 
     suspend fun ensureChat(chatId: String, userKey1: String, userKey2: String) {
         val root = db.reference
-        val chatRef = root.child("chats").child(chatId)
+        val chatRef = root.child(FirebasePaths.CHATS).child(chatId)
 
-        val snap = chatRef.child("participants").get().await()
+        val snap = chatRef.child(FirebasePaths.PARTICIPANTS).get().await()
         if (!snap.exists()) {
             val participants = mapOf(userKey1 to true, userKey2 to true)
-            chatRef.child("participants").setValue(participants).await()
+            chatRef.child(FirebasePaths.PARTICIPANTS).setValue(participants).await()
         }
 
         val now = System.currentTimeMillis()
 
-        root.child("users").child(userKey1).child("chats").child(chatId)
-            .setValue(mapOf("otherUserKey" to userKey2, "updatedAt" to now)).await()
+        root.child(FirebasePaths.USERS).child(userKey1).child(FirebasePaths.CHATS_LIST).child(chatId)
+            .setValue(mapOf(FirebasePaths.OTHER_USER_KEY to userKey2, FirebasePaths.UPDATED_AT to now)).await()
 
-        root.child("users").child(userKey2).child("chats").child(chatId)
-            .setValue(mapOf("otherUserKey" to userKey1, "updatedAt" to now)).await()
+        root.child(FirebasePaths.USERS).child(userKey2).child(FirebasePaths.CHATS_LIST).child(chatId)
+            .setValue(mapOf(FirebasePaths.OTHER_USER_KEY to userKey1, FirebasePaths.UPDATED_AT to now)).await()
     }
 
     suspend fun sendMessage(chatId: String, text: String) {
@@ -42,7 +43,7 @@ class ChatRepository(
         val myUserKey = usersRepo.ensureUserKeySuspend(uid)
 
         val root = db.reference
-        val msgRef = root.child("chats").child(chatId).child("messages").push()
+        val msgRef = root.child(FirebasePaths.chatMessagesPath(chatId)).push()
         val now = System.currentTimeMillis()
 
         val msg = ChatMessage(
@@ -59,18 +60,17 @@ class ChatRepository(
         onMessages: (List<ChatMessage>) -> Unit,
         onError: (DatabaseError) -> Unit
     ): ValueEventListener {
-        val ref = db.reference.child("chats").child(chatId)
-            .child("messages")
-            .orderByChild("createdAt")
+        val ref = db.reference.child(FirebasePaths.chatMessagesPath(chatId))
+            .orderByChild(FirebasePaths.CREATED_AT)
             .limitToLast(limit)
 
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val list = mutableListOf<ChatMessage>()
                 for (child in snapshot.children) {
-                    val senderId = child.child("senderId").getValue(String::class.java) ?: ""
-                    val text = child.child("text").getValue(String::class.java) ?: ""
-                    val createdAt = child.child("createdAt").getValue(Long::class.java) ?: 0L
+                    val senderId = child.child(FirebasePaths.SENDER_ID).getValue(String::class.java) ?: ""
+                    val text = child.child(FirebasePaths.TEXT).getValue(String::class.java) ?: ""
+                    val createdAt = child.child(FirebasePaths.CREATED_AT).getValue(Long::class.java) ?: 0L
                     list.add(ChatMessage(senderId, text, createdAt))
                 }
                 onMessages(list.sortedBy { it.createdAt })
@@ -86,7 +86,7 @@ class ChatRepository(
     }
 
     fun stopListening(chatId: String, listener: ValueEventListener) {
-        db.reference.child("chats").child(chatId).child("messages")
+        db.reference.child(FirebasePaths.chatMessagesPath(chatId))
             .removeEventListener(listener)
     }
 }

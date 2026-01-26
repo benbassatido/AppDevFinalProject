@@ -2,8 +2,10 @@ package com.example.finalproject.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.util.Patterns
 import android.view.View
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.finalproject.MainActivity
@@ -14,23 +16,55 @@ import com.example.finalproject.data.repository.UsersRepository
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.example.finalproject.data.repository.RepositoryManager
+import com.example.finalproject.ui.common.ErrorHandler
 
 class RegisterFragment : Fragment(R.layout.fragment_register) {
 
-    private lateinit var auth: FirebaseAuth
-    private val usersRepo = UsersRepository()
+    private val auth = FirebaseProvider.auth
+    private val usersRepo = RepositoryManager.usersRepo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        auth = FirebaseProvider.auth
-
+        val btnBack = view.findViewById<ImageButton>(R.id.btnBack)
         val etEmail = view.findViewById<TextInputEditText>(R.id.etEmail)
         val etUsername = view.findViewById<TextInputEditText>(R.id.etUsername)
         val etPassword = view.findViewById<TextInputEditText>(R.id.etPassword)
         val etConfirmPassword = view.findViewById<TextInputEditText>(R.id.etConfirmPassword)
         val etNickname = view.findViewById<TextInputEditText>(R.id.etNickname)
         val btnRegister = view.findViewById<MaterialButton>(R.id.btnRegister)
+        val btnTogglePassword = view.findViewById<ImageButton>(R.id.btnTogglePassword)
+        val btnToggleConfirmPassword = view.findViewById<ImageButton>(R.id.btnToggleConfirmPassword)
+
+        // Back button functionality
+        btnBack.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+
+        // Password toggle functionality
+        var isPasswordVisible = false
+        btnTogglePassword.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+            if (isPasswordVisible) {
+                etPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            } else {
+                etPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            }
+            etPassword.setSelection(etPassword.text?.length ?: 0)
+        }
+
+        // Confirm password toggle functionality
+        var isConfirmPasswordVisible = false
+        btnToggleConfirmPassword.setOnClickListener {
+            isConfirmPasswordVisible = !isConfirmPasswordVisible
+            if (isConfirmPasswordVisible) {
+                etConfirmPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            } else {
+                etConfirmPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            }
+            etConfirmPassword.setSelection(etConfirmPassword.text?.length ?: 0)
+        }
 
         btnRegister.setOnClickListener {
             val email = etEmail.text?.toString()?.trim().orEmpty()

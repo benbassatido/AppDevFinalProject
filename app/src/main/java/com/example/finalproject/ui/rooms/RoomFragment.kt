@@ -20,13 +20,15 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
+import com.example.finalproject.data.repository.RepositoryManager
+import com.example.finalproject.ui.common.ErrorHandler
 
 class RoomFragment : Fragment(R.layout.fragment_room) {
 
     private val db = FirebaseProvider.databaseRef
     private val auth = FirebaseProvider.auth
-    private val roomsRepo = RoomsRepository()
-    private val usersRepo = UsersRepository()
+    private val roomsRepo = RepositoryManager.roomsRepo
+    private val usersRepo = RepositoryManager.usersRepo
 
     private var roomId: String = ""
 
@@ -60,7 +62,7 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
 
         roomId = requireArguments().getString("roomId").orEmpty()
         if (roomId.isBlank()) {
-            Toast.makeText(requireContext(), "Missing roomId", Toast.LENGTH_LONG).show()
+            ErrorHandler.showError(requireContext(), null, "Missing roomId")
             parentFragmentManager.popBackStack()
             return
         }
@@ -110,8 +112,8 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
         btnJoin.setOnClickListener {
             roomsRepo.joinRoom(
                 roomId = roomId,
-                onSuccess = { Toast.makeText(requireContext(), "Joined room!", Toast.LENGTH_SHORT).show() },
-                onError = { msg -> Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show() }
+                onSuccess = { ErrorHandler.showSuccess(requireContext(), "Joined room!") },
+                onError = { msg -> ErrorHandler.showError(requireContext(), msg) }
             )
         }
 
@@ -119,10 +121,10 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
             roomsRepo.leaveRoom(
                 roomId = roomId,
                 onSuccess = {
-                    Toast.makeText(requireContext(), "Left room", Toast.LENGTH_SHORT).show()
+                    ErrorHandler.showSuccess(requireContext(), "Left room")
                     parentFragmentManager.popBackStack()
                 },
-                onError = { msg -> Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show() }
+                onError = { msg -> ErrorHandler.showError(requireContext(), msg) }
             )
         }
     }
@@ -158,7 +160,7 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Failed to load current room status", Toast.LENGTH_SHORT).show()
+                ErrorHandler.showError(requireContext(), error.message, "Failed to load current room status")
             }
         }
 
@@ -213,7 +215,7 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Room read failed: ${error.message}", Toast.LENGTH_LONG).show()
+                ErrorHandler.showError(requireContext(), error.message, "Room read failed")
             }
         }
 
@@ -256,7 +258,7 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Failed to load members", Toast.LENGTH_SHORT).show()
+                ErrorHandler.showError(requireContext(), error.message, "Failed to load members")
             }
         }
 
