@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/roomRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:padding="@dimen/padding_normal">
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="@dimen/icon_size_normal"
+        android:layout_height="@dimen/icon_size_normal"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/cd_back"
+        android:src="@android:drawable/ic_media_previous"
+        app:tint="#2C3E50"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvRoomHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/room_header"
+        android:textColor="#2C3E50"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_title"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="@id/btnBack"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toEndOf="@id/btnBack"
+        app:layout_constraintEnd_toStartOf="@id/btnLeave"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnLeave"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/icon_size_normal"
+        android:text="@string/btn_leave"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_small"
+        android:textColor="#FFFFFF"
+        android:visibility="gone"
+        app:cornerRadius="@dimen/padding_large"
+        app:backgroundTint="#D32F2F"
+        android:paddingStart="@dimen/padding_normal"
+        android:paddingEnd="@dimen/padding_normal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardRoomInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_normal"
+        app:cardCornerRadius="@dimen/card_corner_radius_medium"
+        app:cardElevation="@dimen/card_elevation_small"
+        app:strokeWidth="@dimen/card_stroke_width_none"
+        app:cardBackgroundColor="#FFFFFF"
+        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/padding_large">
+
+            <TextView
+                android:id="@+id/tvRoomName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/room_default_name"
+                android:textColor="#2C3E50"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_size_xlarge"
+                tools:text="Champion's Squad" />
+
+            <TextView
+                android:id="@+id/tvRoomSub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_tiny"
+                android:text="@string/room_default_sub"
+                android:textColor="#6B7280"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_size_small"
+                android:letterSpacing="@dimen/letter_spacing_small"
+                tools:text="APEX LEGENDS · BUILD · TRIO" />
+
+            <TextView
+                android:id="@+id/tvRoomDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:text="@string/room_default_desc"
+                android:textColor="#9CA3AF"
+                android:textSize="@dimen/text_size_medium"
+                tools:text="Road to Victory!" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/padding_normal"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvPlayersCount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/room_players_count_default"
+                    android:textColor="#2C3E50"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/text_size_medium"
+                    tools:text="Players: 3/3" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/ivMic"
+                        android:layout_width="@dimen/padding_normal"
+                        android:layout_height="@dimen/padding_normal"
+                        android:src="@android:drawable/ic_btn_speak_now"
+                        app:tint="#6B7280"
+                        android:contentDescription="@string/cd_mic" />
+
+                    <TextView
+                        android:id="@+id/tvMicRequired"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_tiny"
+                        android:text="@string/room_mic_optional"
+                        android:textColor="#6B7280"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/text_size_small"
+                        tools:text="Mic: Required" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvMembersTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_large"
+        android:text="@string/room_members_title"
+        android:textColor="#2C3E50"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_large"
+        android:letterSpacing="@dimen/letter_spacing_small"
+        app:layout_constraintTop_toBottomOf="@id/cardRoomInfo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMembers"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/spacing_default"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/spacing_small"
+        app:layout_constraintTop_toBottomOf="@id/tvMembersTitle"
+        app:layout_constraintBottom_toTopOf="@id/btnReady"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvEmptyMembers"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/room_no_members"
+        android:textColor="#9CA3AF"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="@dimen/padding_normal"
+        app:layout_constraintTop_toTopOf="@id/rvMembers"
+        app:layout_constraintBottom_toBottomOf="@id/rvMembers"
+        app:layout_constraintStart_toStartOf="@id/rvMembers"
+        app:layout_constraintEnd_toEndOf="@id/rvMembers"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnReady"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/text_input_height"
+        android:layout_marginTop="@dimen/padding_normal"
+        android:layout_marginBottom="@dimen/padding_normal"
+        android:text="@string/btn_join_room"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_large"
+        android:letterSpacing="@dimen/letter_spacing_small"
+        android:textColor="#2C3E50"
+        app:backgroundTint="#7DCCB8"
+        app:cornerRadius="@dimen/button_corner_radius_xlarge"
+        android:elevation="@dimen/card_elevation_small"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

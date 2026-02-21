@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_default"
+    app:cardBackgroundColor="#C7D5F5"
+    app:cardCornerRadius="@dimen/card_corner_radius_medium"
+    app:cardElevation="@dimen/card_elevation_small"
+    app:strokeWidth="@dimen/card_stroke_width_none">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_large">
+
+        <TextView
+            android:id="@+id/tvNickname"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/item_friend_default_nickname"
+            android:textColor="#FFFFFF"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/actionsContainer"
+            android:layout_marginEnd="@dimen/padding_normal"/>
+
+        <TextView
+            android:id="@+id/tvUsername"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/item_friend_default_username"
+            android:textColor="#E8EAFF"
+            android:fontFamily="sans-serif"
+            android:textSize="@dimen/text_size_normal"
+            app:layout_constraintStart_toStartOf="@id/tvNickname"
+            app:layout_constraintTop_toBottomOf="@id/tvNickname"
+            app:layout_constraintEnd_toStartOf="@id/actionsContainer"
+            android:layout_marginTop="@dimen/spacing_tiny"
+            android:layout_marginEnd="@dimen/padding_normal"/>
+
+        <LinearLayout
+            android:id="@+id/actionsContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAccept"
+                android:layout_width="@dimen/button_width_medium"
+                android:layout_height="@dimen/icon_size_normal"
+                android:text="@string/btn_accept"
+                android:textAllCaps="true"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="@dimen/text_size_small"
+                android:textColor="#FFFFFF"
+                app:backgroundTint="#8BA7F5"
+                app:cornerRadius="@dimen/padding_large"
+                android:layout_marginEnd="@dimen/spacing_small"
+                android:elevation="@dimen/card_elevation_none"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDecline"
+                android:layout_width="@dimen/button_width_medium"
+                android:layout_height="@dimen/icon_size_normal"
+                android:text="@string/btn_decline"
+                android:textAllCaps="true"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="@dimen/text_size_small"
+                android:textColor="#FFFFFF"
+                app:backgroundTint="#EF4444"
+                app:cornerRadius="@dimen/padding_large"
+                android:elevation="@dimen/card_elevation_none"/>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

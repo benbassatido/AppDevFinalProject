@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/homeRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:padding="@dimen/padding_xlarge">
+
+    <TextView
+        android:id="@+id/tvHelloUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:text="@string/home_hello"
+        android:textColor="#2C3E50"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_massive"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilSearch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_normal"
+        app:boxBackgroundMode="filled"
+        app:boxBackgroundColor="#E8E8F0"
+        app:boxCornerRadiusTopStart="@dimen/card_corner_radius_xlarge"
+        app:boxCornerRadiusTopEnd="@dimen/card_corner_radius_xlarge"
+        app:boxCornerRadiusBottomStart="@dimen/card_corner_radius_xlarge"
+        app:boxCornerRadiusBottomEnd="@dimen/card_corner_radius_xlarge"
+        app:boxStrokeWidth="@dimen/card_stroke_width_none"
+        app:boxStrokeWidthFocused="@dimen/card_stroke_width_none"
+        app:startIconDrawable="@android:drawable/ic_menu_search"
+        app:startIconTint="#9AA3B2"
+        app:layout_constraintTop_toBottomOf="@id/tvHelloUser"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Search games..."
+            android:inputType="text"
+            android:textColor="#2C3E50"
+            android:textColorHint="#9AA3B2"
+            android:paddingTop="@dimen/spacing_default"
+            android:paddingBottom="@dimen/spacing_default"
+            android:background="@null"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/tvPopularGames"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:text="Popular Games"
+        android:textColor="#2C3E50"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_xlarge"
+        app:layout_constraintTop_toBottomOf="@id/tilSearch"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvGames"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:clipToPadding="false"
+        android:paddingBottom="@dimen/spacing_small"
+        app:layout_constraintBottom_toTopOf="@id/btnViewFriends"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvPopularGames"
+        tools:listitem="@layout/item_game_logo" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnViewFriends"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/button_height_medium"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:layout_marginBottom="@dimen/spacing_normal"
+        android:layout_marginEnd="@dimen/spacing_small"
+        app:cardCornerRadius="@dimen/card_corner_radius_xlarge"
+        app:cardElevation="@dimen/card_elevation_none"
+        app:cardBackgroundColor="#C8D5E0"
+        app:strokeWidth="@dimen/card_stroke_width_none"
+        app:rippleColor="#22000000"
+        app:layout_constraintTop_toBottomOf="@id/rvGames"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guidelineCenter">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingStart="@dimen/padding_medium"
+            android:paddingEnd="@dimen/padding_medium">
+
+            <ImageView
+                android:layout_width="@dimen/icon_size_tiny"
+                android:layout_height="@dimen/icon_size_tiny"
+                android:src="@drawable/ic_friends"
+                app:tint="#5A6B7C" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_view_friends"
+                android:textColor="#5A6B7C"
+                android:textSize="@dimen/text_size_normal"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginStart="@dimen/spacing_small"/>
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnLogout"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/button_height_medium"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:layout_marginBottom="@dimen/spacing_normal"
+        android:layout_marginStart="@dimen/spacing_small"
+        app:cardCornerRadius="@dimen/card_corner_radius_xlarge"
+        app:cardElevation="@dimen/card_elevation_none"
+        app:cardBackgroundColor="#C8D5E0"
+        app:strokeWidth="@dimen/card_stroke_width_none"
+        app:rippleColor="#22000000"
+        app:layout_constraintTop_toBottomOf="@id/rvGames"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guidelineCenter"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingStart="@dimen/padding_medium"
+            android:paddingEnd="@dimen/padding_medium">
+
+            <ImageView
+                android:layout_width="@dimen/icon_size_tiny"
+                android:layout_height="@dimen/icon_size_tiny"
+                android:src="@android:drawable/ic_lock_power_off"
+                app:tint="#5A6B7C" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_log_out"
+                android:textColor="#5A6B7C"
+                android:textSize="@dimen/text_size_normal"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginStart="@dimen/spacing_small"/>
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

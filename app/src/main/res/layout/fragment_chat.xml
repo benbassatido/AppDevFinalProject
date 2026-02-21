@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_normal"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="@dimen/icon_size_normal"
+            android:layout_height="@dimen/icon_size_normal"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_media_previous"
+            app:tint="#2C3E50"
+            android:contentDescription="@string/cd_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:id="@+id/tvChatTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/chat_player_title"
+            android:textColor="#2C3E50"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="@dimen/text_size_xlarge"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Messages RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMessages"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingTop="@dimen/padding_normal"
+        android:paddingBottom="@dimen/padding_normal"
+        android:paddingStart="@dimen/padding_normal"
+        android:paddingEnd="@dimen/padding_normal"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/headerContainer"
+        app:layout_constraintBottom_toTopOf="@id/inputContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/inputContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_normal"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="#E8E6F0"
+            app:cardCornerRadius="@dimen/button_corner_radius_large"
+            app:cardElevation="@dimen/card_elevation_none"
+            app:strokeWidth="@dimen/card_stroke_width_none"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnSend"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <EditText
+                android:id="@+id/etMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/button_height_normal"
+                android:hint="@string/hint_type_message"
+                android:textColor="#2C3E50"
+                android:textColorHint="#9CA3AF"
+                android:fontFamily="sans-serif"
+                android:textSize="@dimen/text_size_medium"
+                android:background="@android:color/transparent"
+                android:paddingStart="@dimen/padding_xlarge"
+                android:paddingEnd="@dimen/padding_xlarge"
+                android:paddingTop="@dimen/spacing_default"
+                android:paddingBottom="@dimen/spacing_default"
+                android:maxLines="4"
+                android:inputType="textMultiLine|textCapSentences" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSend"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height_normal"
+            android:text="@string/btn_send"
+            android:textAllCaps="true"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="@dimen/text_size_default"
+            android:textColor="#FFFFFF"
+            android:paddingStart="@dimen/padding_xxlarge"
+            android:paddingEnd="@dimen/padding_xxlarge"
+            android:layout_marginStart="@dimen/spacing_default"
+            app:cornerRadius="@dimen/button_corner_radius_large"
+            app:backgroundTint="#8BA7F5"
+            android:elevation="@dimen/card_elevation_none"
+            app:layout_constraintStart_toEndOf="@id/cardInput"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/createRoomRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:padding="@dimen/padding_xxlarge">
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="@dimen/icon_size_normal"
+        android:layout_height="@dimen/icon_size_normal"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_media_previous"
+        android:contentDescription="@string/cd_back"
+        app:tint="#2C3E50"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvAppName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SquadApp"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_xlarge"
+        android:textColor="#2C3E50"
+        app:layout_constraintTop_toTopOf="@id/btnBack"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvCreateTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/create_room_title"
+        android:textColor="#2C3E50"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_massive"
+        android:letterSpacing="@dimen/letter_spacing_tiny"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/spacing_big"
+        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvRoomNameLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/label_room_name"
+        android:textColor="#2C3E50"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_large"
+        android:layout_marginTop="@dimen/spacing_colossal"
+        app:layout_constraintTop_toBottomOf="@id/tvCreateTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/boxRoomName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_small"
+        app:cardCornerRadius="@dimen/card_corner_radius_small"
+        app:cardElevation="@dimen/card_elevation_none"
+        app:strokeWidth="@dimen/card_stroke_width_none"
+        app:cardBackgroundColor="#E8E6F0"
+        app:layout_constraintTop_toBottomOf="@id/tvRoomNameLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etRoomTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/text_input_height"
+            android:background="@android:color/transparent"
+            android:hint="@string/hint_room_name"
+            android:textColor="#2C3E50"
+            android:textColorHint="#9CA3AF"
+            android:paddingStart="@dimen/padding_normal"
+            android:paddingEnd="@dimen/padding_normal"
+            android:paddingTop="@dimen/padding_normal"
+            android:paddingBottom="@dimen/padding_normal"
+            android:inputType="textCapSentences" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvDescLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/label_description"
+        android:textColor="#2C3E50"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_large"
+        android:layout_marginTop="@dimen/spacing_big"
+        app:layout_constraintTop_toBottomOf="@id/boxRoomName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/boxDescription"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/room_description_height"
+        android:layout_marginTop="@dimen/spacing_small"
+        app:cardCornerRadius="@dimen/card_corner_radius_small"
+        app:cardElevation="@dimen/card_elevation_none"
+        app:strokeWidth="@dimen/card_stroke_width_none"
+        app:cardBackgroundColor="#E8E6F0"
+        app:layout_constraintTop_toBottomOf="@id/tvDescLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etDescription"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:gravity="top"
+            android:hint="@string/hint_description"
+            android:textColor="#2C3E50"
+            android:textColorHint="#9CA3AF"
+            android:paddingStart="@dimen/padding_normal"
+            android:paddingEnd="@dimen/padding_normal"
+            android:paddingTop="@dimen/padding_normal"
+            android:paddingBottom="@dimen/padding_normal"
+            android:inputType="textMultiLine" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/boxMic"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_big"
+        app:cardCornerRadius="@dimen/card_corner_radius_small"
+        app:cardElevation="@dimen/card_elevation_none"
+        app:strokeWidth="@dimen/card_stroke_width_none"
+        app:cardBackgroundColor="#E8E6F0"
+        app:layout_constraintTop_toBottomOf="@id/boxDescription"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/button_height_xxlarge"
+            android:paddingStart="@dimen/padding_normal"
+            android:paddingEnd="@dimen/padding_normal"
+            android:paddingTop="@dimen/spacing_default"
+            android:paddingBottom="@dimen/spacing_default"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="@dimen/icon_size_medium"
+                android:layout_height="@dimen/icon_size_medium"
+                android:src="@android:drawable/ic_btn_speak_now"
+                app:tint="#2C3E50"
+                android:contentDescription="@string/cd_mic" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_default"
+                android:layout_weight="1"
+                android:text="@string/label_mic_required"
+                android:textColor="#2C3E50"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_size_large" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/swMicRequired"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                app:useMaterialThemeColors="false"
+                app:thumbTint="#FFFFFF"
+                app:trackTint="#7DCCB8"
+                app:trackTintMode="src_in" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCreateRoom"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/button_height_xlarge"
+        android:layout_marginBottom="@dimen/spacing_big"
+        android:text="@string/btn_create_room"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_large"
+        android:textColor="#2C3E50"
+        android:includeFontPadding="false"
+        app:cornerRadius="@dimen/button_corner_radius_xlarge"
+        app:backgroundTint="#7DCCB8"
+        android:elevation="@dimen/card_elevation_small"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

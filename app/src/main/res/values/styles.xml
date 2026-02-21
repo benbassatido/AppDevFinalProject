@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="DarkConfirmDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+
+        <item name="android:background">@drawable/bg_dark_dialog</item>
+
+        <item name="materialAlertDialogBodyTextStyle">@style/DarkDialogBody</item>
+        <item name="shapeAppearanceOverlay">@style/DarkDialogShape</item>
+
+        <item name="buttonBarPositiveButtonStyle">@style/DarkDialogPositive</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DarkDialogNegative</item>
+    </style>
+
+
+    <style name="DarkDialogBody" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="DarkDialogShape">
+        <item name="cornerSize">@dimen/card_corner_radius_medium</item>
+    </style>
+
+    <style name="DarkDialogPositive" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">#F87171</item>
+    </style>
+
+    <style name="DarkDialogNegative" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">#9CA3AF</item>
+    </style>
+
+
+
+
+
+</resources>

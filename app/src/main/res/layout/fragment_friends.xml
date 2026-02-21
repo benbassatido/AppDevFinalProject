@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/friendsRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:padding="@dimen/padding_xlarge">
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="@dimen/icon_size_normal"
+        android:layout_height="@dimen/icon_size_normal"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_media_previous"
+        android:contentDescription="@string/cd_back"
+        app:tint="#2C3E50"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvAppName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/friends_app_name"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="@dimen/text_size_title"
+        android:textColor="#2C3E50"
+        app:layout_constraintTop_toTopOf="@id/btnBack"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivFriendsIcon"
+        android:layout_width="@dimen/text_input_height_large"
+        android:layout_height="@dimen/text_input_height_large"
+        android:layout_marginTop="@dimen/padding_huge"
+        android:src="@drawable/ic_friends"
+        app:tint="#8BA7F5"
+        android:contentDescription="Friends icon"
+        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/friends_title"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="@dimen/text_size_xlarge"
+        android:letterSpacing="@dimen/letter_spacing_medium"
+        android:textColor="#8BA7F5"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:layout_marginTop="@dimen/spacing_default"
+        app:layout_constraintTop_toBottomOf="@id/ivFriendsIcon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/tabsContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_xlarge"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/tabFriends"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginEnd="@dimen/padding_xlarge"
+            android:paddingBottom="@dimen/spacing_small">
+
+            <TextView
+                android:id="@+id/btnTabFriends"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_friends_list"
+                android:textAllCaps="true"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="@dimen/text_size_normal"
+                android:textColor="#8BA7F5"
+                android:letterSpacing="@dimen/letter_spacing_small" />
+
+            <View
+                android:id="@+id/underlineFriends"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/underline_height"
+                android:layout_marginTop="@dimen/spacing_tiny"
+                android:background="#8BA7F5" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tabRequests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="@dimen/padding_xlarge"
+            android:paddingBottom="@dimen/spacing_small">
+
+            <TextView
+                android:id="@+id/btnTabRequests"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_requests"
+                android:textAllCaps="true"
+                android:fontFamily="sans-serif"
+                android:textSize="@dimen/text_size_normal"
+                android:textColor="#C0C0C0"
+                android:letterSpacing="@dimen/letter_spacing_small" />
+
+            <View
+                android:id="@+id/underlineRequests"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/underline_height"
+                android:layout_marginTop="@dimen/spacing_tiny"
+                android:background="@android:color/transparent" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvSection"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/friends_section_title"
+        android:fontFamily="sans-serif"
+        android:textSize="@dimen/text_size_large"
+        android:textColor="#4A5568"
+        android:layout_marginTop="@dimen/padding_xlarge"
+        app:layout_constraintTop_toBottomOf="@id/tabsContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilSearchFriends"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:visibility="gone"
+        app:boxBackgroundMode="filled"
+        app:boxBackgroundColor="#E8E8F0"
+        app:boxCornerRadiusTopStart="@dimen/padding_large"
+        app:boxCornerRadiusTopEnd="@dimen/padding_large"
+        app:boxCornerRadiusBottomStart="@dimen/padding_large"
+        app:boxCornerRadiusBottomEnd="@dimen/padding_large"
+        app:boxStrokeWidth="@dimen/card_stroke_width_none"
+        app:boxStrokeWidthFocused="@dimen/card_stroke_width_none"
+        app:startIconDrawable="@android:drawable/ic_menu_search"
+        app:startIconTint="#9AA3B2"
+        app:layout_constraintTop_toBottomOf="@id/tvSection"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSearchFriends"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint=""
+            android:textColor="#2C3E50"
+            android:textColorHint="#9AA3B2"
+            android:paddingTop="@dimen/spacing_default"
+            android:paddingBottom="@dimen/spacing_default"
+            android:background="@null" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSearchResults"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/search_results_height"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/tilSearchFriends"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tvNoResults"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/friends_no_users_found"
+        android:textColor="#9AA3B2"
+        android:gravity="center"
+        android:padding="@dimen/padding_small"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/rvSearchResults"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvFriends"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/padding_normal"
+        app:layout_constraintTop_toBottomOf="@id/tvNoResults"
+        app:layout_constraintBottom_toTopOf="@id/btnFindTeammates"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/item_friend" />
+
+    <TextView
+        android:id="@+id/tvEmptyFriends"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/friends_no_friends"
+        android:textColor="#9AA3B2"
+        android:gravity="center"
+        android:textSize="@dimen/text_size_medium"
+        android:padding="@dimen/padding_small"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/rvFriends"
+        app:layout_constraintBottom_toBottomOf="@id/rvFriends"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/requestsContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/tvNoResults"
+        app:layout_constraintBottom_toTopOf="@id/btnFindTeammates"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnFindTeammates"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/text_input_height"
+        android:layout_marginStart="@dimen/padding_xlarge"
+        android:layout_marginEnd="@dimen/padding_xlarge"
+        android:layout_marginBottom="@dimen/padding_normal"
+        android:text="@string/btn_find_teammates"
+        android:textAllCaps="true"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="@dimen/text_size_normal"
+        android:textColor="#FFFFFF"
+        app:cornerRadius="@dimen/button_corner_radius_xlarge"
+        app:backgroundTint="#8BA7F5"
+        android:elevation="@dimen/card_elevation_small"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

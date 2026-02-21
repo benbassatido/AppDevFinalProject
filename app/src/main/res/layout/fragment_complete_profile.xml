@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/completeProfileRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:padding="@dimen/padding_xlarge">
+
+    <TextView
+        android:id="@+id/tvHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/complete_profile_title"
+        android:textColor="#2C3E50"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_xxlarge"
+        android:gravity="center"
+        android:letterSpacing="@dimen/letter_spacing_tiny"
+        android:layout_marginTop="@dimen/icon_size_normal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardProfile"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/padding_huge"
+        app:cardCornerRadius="@dimen/card_corner_radius_medium"
+        app:cardElevation="@dimen/card_elevation_small"
+        app:strokeWidth="@dimen/card_stroke_width_none"
+        app:cardBackgroundColor="#FFFFFF"
+        app:layout_constraintTop_toBottomOf="@id/tvHeader"
+        app:layout_constraintBottom_toTopOf="@id/btnSaveProfile"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/padding_xlarge">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_username"
+                android:textColor="#2C3E50"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_size_large"
+                android:layout_marginBottom="@dimen/spacing_small"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/card_corner_radius_small"
+                app:cardElevation="@dimen/card_elevation_none"
+                app:strokeWidth="@dimen/card_stroke_width_none"
+                app:cardBackgroundColor="#E8E6F0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/text_input_height"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/hint_enter_username"
+                    android:textColor="#2C3E50"
+                    android:textColorHint="#9CA3AF"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:paddingStart="@dimen/padding_normal"
+                    android:paddingEnd="@dimen/padding_normal"
+                    android:paddingTop="@dimen/padding_normal"
+                    android:paddingBottom="@dimen/padding_normal"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/padding_xlarge"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_nickname"
+                android:textColor="#2C3E50"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_size_large"
+                android:layout_marginBottom="@dimen/spacing_small"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/card_corner_radius_small"
+                app:cardElevation="@dimen/card_elevation_none"
+                app:strokeWidth="@dimen/card_stroke_width_none"
+                app:cardBackgroundColor="#E8E6F0">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNickname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/text_input_height"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/hint_enter_nickname"
+                    android:textColor="#2C3E50"
+                    android:textColorHint="#9CA3AF"
+                    android:inputType="textCapWords"
+                    android:maxLines="1"
+                    android:paddingStart="@dimen/padding_normal"
+                    android:paddingEnd="@dimen/padding_normal"
+                    android:paddingTop="@dimen/padding_normal"
+                    android:paddingBottom="@dimen/padding_normal"/>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSaveProfile"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/text_input_height"
+        android:layout_marginTop="@dimen/padding_xlarge"
+        android:layout_marginBottom="@dimen/padding_xlarge"
+        android:text="@string/btn_save_profile"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_large"
+        android:letterSpacing="@dimen/letter_spacing_small"
+        android:textColor="#2C3E50"
+        app:backgroundTint="#7DCCB8"
+        app:cornerRadius="@dimen/button_corner_radius_xlarge"
+        android:elevation="@dimen/card_elevation_small"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

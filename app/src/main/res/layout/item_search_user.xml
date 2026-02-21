@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_small"
+    app:cardBackgroundColor="#FEFDFB"
+    app:cardCornerRadius="@dimen/card_corner_radius_small"
+    app:strokeWidth="@dimen/card_stroke_width_thin"
+    app:strokeColor="#E8E6E0"
+    app:cardElevation="@dimen/card_elevation_tiny">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_normal">
+
+        <TextView
+            android:id="@+id/tvNickname"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/item_friend_default_nickname"
+            android:textColor="#2C3E50"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnAddFriend"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            android:layout_marginEnd="@dimen/padding_normal" />
+
+        <TextView
+            android:id="@+id/tvUsername"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/item_friend_default_username"
+            android:textColor="#7F8C8D"
+            android:textSize="@dimen/text_size_normal"
+            app:layout_constraintStart_toStartOf="@id/tvNickname"
+            app:layout_constraintEnd_toEndOf="@id/tvNickname"
+            app:layout_constraintTop_toBottomOf="@id/tvNickname"
+            android:layout_marginTop="@dimen/spacing_tiny" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddFriend"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/button_height_medium"
+            android:text="Add Friend"
+            android:textAllCaps="false"
+            android:textColor="#5A6B7C"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_size_normal"
+            android:paddingStart="@dimen/padding_xlarge"
+            android:paddingEnd="@dimen/padding_xlarge"
+            android:visibility="visible"
+            app:cornerRadius="@dimen/button_corner_radius_medium"
+            app:backgroundTint="#C8D5E0"
+            app:strokeWidth="@dimen/card_stroke_width_none"
+            android:stateListAnimator="@null"
+            app:rippleColor="#22000000"
+            app:icon="@drawable/ic_user"
+            app:iconTint="#5A6B7C"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/spacing_small"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

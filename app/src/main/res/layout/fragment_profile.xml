@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:padding="@dimen/padding_xlarge">
+
+    <TextView
+        android:id="@+id/tvProfileTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="PROFILE"
+        android:textColor="#2C3E50"
+        android:textSize="@dimen/text_size_xxlarge"
+        android:textStyle="bold"
+        android:letterSpacing="@dimen/letter_spacing_medium"
+        android:layout_marginTop="@dimen/spacing_massive"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ImageView
+        android:id="@+id/ivProfileAvatar"
+        android:layout_width="@dimen/avatar_size"
+        android:layout_height="@dimen/avatar_size"
+        android:layout_marginTop="@dimen/spacing_xlarge"
+        android:src="@drawable/ic_user"
+        android:background="@drawable/bg_circle_avatar"
+        android:padding="@dimen/padding_xlarge"
+        app:tint="#8B5CF6"
+        app:layout_constraintTop_toBottomOf="@id/tvProfileTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvProfileNickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:text="Nickname"
+        android:textColor="#2C3E50"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_huge"
+        app:layout_constraintTop_toBottomOf="@id/ivProfileAvatar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvProfileUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_tiny"
+        android:text="\@username"
+        android:textColor="#7F8C8D"
+        android:textSize="@dimen/text_size_large"
+        app:layout_constraintTop_toBottomOf="@id/tvProfileNickname"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvProfileEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_tiny"
+        android:text="email@example.com"
+        android:textColor="#95A5A6"
+        android:textSize="@dimen/text_size_default"
+        app:layout_constraintTop_toBottomOf="@id/tvProfileUsername"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnEditProfile"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/button_height_large"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginTop="@dimen/spacing_xlarge"
+        android:layout_marginStart="@dimen/spacing_xlarge"
+        android:layout_marginEnd="@dimen/spacing_xlarge"
+        app:cardCornerRadius="@dimen/card_corner_radius_normal"
+        app:cardElevation="@dimen/card_elevation_none"
+        app:cardBackgroundColor="#8B5CF6"
+        app:strokeWidth="@dimen/card_stroke_width_none"
+        app:rippleColor="#22FFFFFF"
+        app:layout_constraintTop_toBottomOf="@id/tvProfileEmail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="EDIT PROFILE"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/text_size_large"
+            android:fontFamily="sans-serif-medium"/>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnLogoutProfile"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/button_height_large"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginTop="@dimen/spacing_normal"
+        android:layout_marginStart="@dimen/spacing_xlarge"
+        android:layout_marginEnd="@dimen/spacing_xlarge"
+        app:cardCornerRadius="@dimen/card_corner_radius_normal"
+        app:cardElevation="@dimen/card_elevation_none"
+        app:cardBackgroundColor="#FFFFFF"
+        app:strokeWidth="@dimen/card_stroke_width_medium"
+        app:strokeColor="#E74C3C"
+        app:rippleColor="#22E74C3C"
+        app:layout_constraintTop_toBottomOf="@id/btnEditProfile"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="LOG OUT"
+            android:textColor="#E74C3C"
+            android:textSize="@dimen/text_size_large"
+            android:fontFamily="sans-serif-medium"/>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
