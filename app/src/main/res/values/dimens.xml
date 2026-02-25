@@ -26,6 +26,8 @@
     <dimen name="padding_large">18dp</dimen>
     <dimen name="padding_xlarge">20dp</dimen>
     <dimen name="padding_xxlarge">24dp</dimen>
+    <dimen name="padding_huge">32dp</dimen>
+    <dimen name="padding_massive">72dp</dimen>
 
     <dimen name="button_height_small">40dp</dimen>
     <dimen name="button_height_medium">44dp</dimen>
@@ -73,6 +75,7 @@
     <dimen name="text_size_default">14sp</dimen>
     <dimen name="text_size_medium">15sp</dimen>
     <dimen name="text_size_large">16sp</dimen>
+    <dimen name="text_size_title">18sp</dimen>
     <dimen name="text_size_xlarge">18sp</dimen>
     <dimen name="text_size_xxlarge">20sp</dimen>
     <dimen name="text_size_huge">24sp</dimen>

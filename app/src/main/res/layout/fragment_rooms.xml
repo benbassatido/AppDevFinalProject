@@ -27,10 +27,10 @@
         android:textStyle="bold"
         android:textSize="@dimen/text_size_xlarge"
         android:textColor="#2C3E50"
-        android:layout_marginStart="@dimen/padding_normal"
-        android:layout_marginTop="@dimen/padding_huge"
+        android:layout_marginTop="@dimen/padding_normal"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvRooms"

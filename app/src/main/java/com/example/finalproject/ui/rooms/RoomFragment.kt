@@ -37,6 +37,7 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
     private var currentRoomListener: ValueEventListener? = null
 
     // views
+    private lateinit var tvRoomHeader: TextView
     private lateinit var tvRoomName: TextView
     private lateinit var tvRoomSub: TextView
     private lateinit var tvRoomDesc: TextView
@@ -68,6 +69,7 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
             return
         }
 
+        tvRoomHeader = view.findViewById(R.id.tvRoomHeader)
         tvRoomName = view.findViewById(R.id.tvRoomName)
         tvRoomSub = view.findViewById(R.id.tvRoomSub)
         tvRoomDesc = view.findViewById(R.id.tvRoomDesc)
@@ -196,6 +198,7 @@ class RoomFragment : Fragment(R.layout.fragment_room) {
                 }
 
                 tvRoomName.text = name
+                tvRoomHeader.text = name
                 tvRoomDesc.text = if (desc.isBlank()) "No description" else desc
 
                 val sub = listOf(gName, variant, partyType)

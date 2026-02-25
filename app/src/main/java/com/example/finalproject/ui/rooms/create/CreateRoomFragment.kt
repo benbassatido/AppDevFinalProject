@@ -88,28 +88,33 @@ class CreateRoomFragment : Fragment(R.layout.fragment_create_room) {
                             roomsRepo.createRoom(
                                 room = room,
                                 onSuccess = { roomId ->
-                                    roomsRepo.joinRoom(
-                                        roomId = roomId,
-                                        onSuccess = {
-                                            btnCreate.isEnabled = true
-                                            btnCreate.text = "CREATE ROOM"
-
-                                            parentFragmentManager.popBackStack()
-
-                                            val next = RoomFragment().apply {
-                                                arguments = bundleOf("roomId" to roomId)
+                                    // Leave current room first (if in one), then join new room
+                                    database.reference.child("user_current_room").child(userKey).get()
+                                        .addOnSuccessListener { currentRoomSnap ->
+                                            val currentRoomId = currentRoomSnap.getValue(String::class.java)
+                                            
+                                            if (!currentRoomId.isNullOrBlank()) {
+                                                // Leave the current room first
+                                                roomsRepo.leaveRoom(
+                                                    roomId = currentRoomId,
+                                                    onSuccess = {
+                                                        // Now join the new room
+                                                        joinNewlyCreatedRoom(roomId)
+                                                    },
+                                                    onError = { 
+                                                        // If leave fails, still try to join the new room
+                                                        joinNewlyCreatedRoom(roomId)
+                                                    }
+                                                )
+                                            } else {
+                                                // Not in any room, just join the new one
+                                                joinNewlyCreatedRoom(roomId)
                                             }
-                                            parentFragmentManager.beginTransaction()
-                                                .replace(R.id.fragmentContainer, next)
-                                                .addToBackStack(null)
-                                                .commit()
-                                        },
-                                        onError = { msg ->
-                                            btnCreate.isEnabled = true
-                                            btnCreate.text = "CREATE ROOM"
-                                            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                                         }
-                                    )
+                                        .addOnFailureListener {
+                                            // If check fails, still try to join
+                                            joinNewlyCreatedRoom(roomId)
+                                        }
                                 },
                                 onError = { msg ->
                                     btnCreate.isEnabled = true
@@ -131,5 +136,33 @@ class CreateRoomFragment : Fragment(R.layout.fragment_create_room) {
                 }
             )
         }
+    }
+
+    // joins the newly created room and navigates to it
+    private fun joinNewlyCreatedRoom(roomId: String) {
+        val btnCreate = view?.findViewById<MaterialButton>(R.id.btnCreateRoom) ?: return
+        
+        roomsRepo.joinRoom(
+            roomId = roomId,
+            onSuccess = {
+                btnCreate.isEnabled = true
+                btnCreate.text = "CREATE ROOM"
+
+                parentFragmentManager.popBackStack()
+
+                val next = RoomFragment().apply {
+                    arguments = bundleOf("roomId" to roomId)
+                }
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, next)
+                    .addToBackStack(null)
+                    .commit()
+            },
+            onError = { msg ->
+                btnCreate.isEnabled = true
+                btnCreate.text = "CREATE ROOM"
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 }

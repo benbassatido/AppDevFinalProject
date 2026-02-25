@@ -8,17 +8,6 @@
     android:background="@drawable/background"
     android:padding="@dimen/padding_xlarge">
 
-    <ImageButton
-        android:id="@+id/btnBack"
-        android:layout_width="@dimen/icon_size_normal"
-        android:layout_height="@dimen/icon_size_normal"
-        android:background="@android:color/transparent"
-        android:src="@android:drawable/ic_media_previous"
-        android:contentDescription="@string/cd_back"
-        app:tint="#2C3E50"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/tvAppName"
         android:layout_width="wrap_content"
@@ -27,8 +16,7 @@
         android:fontFamily="sans-serif-medium"
         android:textSize="@dimen/text_size_title"
         android:textColor="#2C3E50"
-        app:layout_constraintTop_toTopOf="@id/btnBack"
-        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -40,7 +28,7 @@
         android:src="@drawable/ic_friends"
         app:tint="#8BA7F5"
         android:contentDescription="Friends icon"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        app:layout_constraintTop_toBottomOf="@id/tvAppName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
